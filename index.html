@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MindBuy — Consumo Consciente</title>
-  <link rel="preconnect" href="joshico-regular-font.zip" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,1000;0,1000;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -242,7 +242,7 @@
     .tl-title { font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
     .tl-desc { font-size: .83rem; color: var(--ink3); line-height: 1.6; }
 
-    .video-wrap { border-radius: var(--radius); overflow: hidden; aspect-ratio: 16/9; background: var(--ink); }
+    .video-wrap { border-radius: var(--radius); overflow: hidden; aspect-ratio: 16/9; background: var(--ink); position: relative; z-index: 1; }
     .video-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
 
     .cta-card { background: var(--sage-ghost); border-radius: var(--radius-lg); border: 1.5px solid var(--stone2); padding: 28px; display: flex; align-items: flex-start; gap: 20px; }
@@ -401,6 +401,36 @@
     .mt-2 { margin-top: 8px; } .mt-4 { margin-top: 16px; } .mt-6 { margin-top: 24px; } .mb-4 { margin-bottom: 16px; }
     .count-up { display: inline; }
 
+    /* 🌿 ESTILOS DE LA MONSTERA DECORATIVA */
+    .decor-card { position: relative; overflow: hidden; }
+    .card-bg-monstera {
+      position: absolute; bottom: -40px; right: -50px;
+      width: 180px; height: auto; opacity: 0.12;
+      pointer-events: none; transform: rotate(-15deg); z-index: 0;
+    }
+
+    /* 📸 ESTILOS DEL CARRUSEL DE FOTOS */
+    .photo-carousel {
+      position: relative; width: 100%; border-radius: var(--radius);
+      overflow: hidden; aspect-ratio: 21/9; background: var(--stone2); box-shadow: var(--shadow-xs);
+    }
+    .photo-slides { display: flex; width: 100%; height: 100%; transition: transform 0.4s var(--ease); }
+    .photo-slide { min-width: 100%; height: 100%; }
+    .photo-slide img { width: 100%; height: 100%; object-fit: cover; }
+    .p-carousel-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      color: var(--ink); font-size: .85rem; display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-xs); transition: all var(--t); z-index: 2;
+    }
+    .p-carousel-arrow:hover { background: var(--white); color: var(--sage-dark); transform: translateY(-50%) scale(1.05); }
+    .p-carousel-arrow.prev { left: 16px; }
+    .p-carousel-arrow.next { right: 16px; }
+    .p-carousel-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 2; }
+    .p-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.4); cursor: pointer; transition: all var(--t); }
+    .p-dot.active { background: var(--white); transform: scale(1.2); }
+
     @media(max-width:640px){
       .auth-form-side { padding: 32px 20px; }
       .dash-hero { padding: 32px 20px 56px; }
@@ -411,6 +441,8 @@
       .nav-links { display: none; }
       .tracker-layout, .goals-layout, .history-layout { padding: 24px 16px 64px; }
       .guide-layout { padding: 24px 16px 64px; }
+      .card-bg-monstera { width: 120px; bottom: -20px; right: -20px; opacity: 0.08; }
+      .photo-carousel { aspect-ratio: 16/9; }
     }
   </style>
 </head>
@@ -423,651 +455,851 @@
 
 <div id="toast-container"></div>
 
-<!-- LOGIN -->
 <div id="view-login" class="view">
   <div class="auth-layout">
     <div class="auth-panel">
       <div class="auth-panel-bg"></div>
       <div class="auth-panel-pattern"></div>
       <div class="auth-panel-content">
-        <div class="auth-panel-tag">🌿 Proyecto académico — Universidad</div>
-        <h2 class="auth-panel-headline">Consume con<br />intención,<br />vive mejor.</h2>
-        <p class="auth-panel-sub">MindBuy te ayuda a entender tus patrones de consumo digital y descubrir alternativas sostenibles.</p>
+        <div class="auth-panel-tag">✨ Proyecto de Tesis</div>
+        <h1 class="auth-panel-headline">Hacia un consumo más consciente y deliberado.</h1>
+        <p class="auth-panel-sub">MindBuy te ayuda a entender tus hábitos de compra, pausar antes de impulsos y descubrir alternativas sostenibles.</p>
         <div class="auth-features">
-          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Rastrea tu huella de carbono en compras online</span></div>
-          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Quiz personalizado de hábitos de consumo</span></div>
-          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Registro de compras y metas sostenibles</span></div>
-          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Guía de marcas éticas y alternativas</span></div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Evaluación de perfil de consumidor</span></div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Registro inteligente de compras y metas</span></div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Guía curada de alternativas éticas</span></div>
         </div>
       </div>
     </div>
     <div class="auth-form-side">
-      <!-- ✅ LOGO REAL — sube /public/logo.png a tu repo de Vercel -->
       <div class="auth-logo-wrap">
-        <img src="mindbuy-logo.png" alt="MindBuy" style="height:72px;width:auto;object-fit:contain;" />
+        <img src="/logo.png" alt="MindBuy" style="height:72px;width:auto;object-fit:contain;" />
       </div>
-      <h1 class="auth-form-title">Bienvenido de vuelta</h1>
-      <p class="auth-form-sub">Inicia sesión para continuar tu viaje hacia un consumo más consciente.</p>
-      <div class="form-stack">
-        <div class="field"><label>Correo Electrónico</label><input type="email" id="login-email" placeholder="tu@correo.com" /></div>
-        <div class="field"><label>Contraseña</label><input type="password" id="login-password" placeholder="••••••••" /></div>
-        <div class="form-actions">
-          <button class="btn btn-primary btn-full btn-lg" id="btn-login">Iniciar Sesión →</button>
-          <div class="divider">o</div>
-          <button class="btn btn-outline btn-full" id="btn-go-register">Crear cuenta nueva</button>
+      <h2 class="auth-form-title">Bienvenido a MindBuy</h2>
+      <p class="auth-form-sub">Ingresa para gestionar tus hábitos de consumo.</p>
+      <form class="form-stack" id="login-form">
+        <div class="field">
+          <label>Email institucional / personal</label>
+          <input type="email" id="login-email" placeholder="tu@ejemplo.com" required autocomplete="email" />
         </div>
+        <div class="field">
+          <label>Contraseña</label>
+          <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary btn-full">Iniciar Sesión →</button>
+        </div>
+      </form>
+      <div class="divider">ó</div>
+      <button class="dev-bypass" onclick="bypassAuth()">⚡ Acceso Rápido de Desarrollo (Bypass)</button>
+      <div class="form-footer">
+        ¿No tienes una cuenta? <button onclick="showAuthView('register')">Regístrate</button>
       </div>
-      <button class="dev-bypass" id="btn-dev-bypass">🌿 Modo Desarrollador — Acceso directo</button>
     </div>
   </div>
 </div>
 
-<!-- REGISTER -->
 <div id="view-register" class="view">
   <div class="auth-layout">
     <div class="auth-panel">
       <div class="auth-panel-bg"></div>
       <div class="auth-panel-pattern"></div>
       <div class="auth-panel-content">
-        <div class="auth-panel-tag">🌍 Únete a la comunidad</div>
-        <h2 class="auth-panel-headline">Tu viaje hacia<br />el consumo<br />consciente.</h2>
-        <p class="auth-panel-sub">Registra tus hábitos, fíjate metas y descubre qué tan sostenibles son tus decisiones de compra.</p>
-        <div class="auth-features">
-          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Análisis personalizado de tus hábitos</span></div>
-          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Tracker de compras conscientes</span></div>
-          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Metas de consumo con seguimiento</span></div>
-        </div>
+        <div class="auth-panel-tag">✨ Proyecto de Tesis</div>
+        <h1 class="auth-panel-headline">Únete al cambio global de mentalidad.</h1>
+        <p class="auth-panel-sub">Forma parte del estudio experimental sobre comportamientos de compra digitales y toma el control financiero y ambiental.</p>
       </div>
     </div>
     <div class="auth-form-side">
-      <!-- ✅ LOGO REAL -->
       <div class="auth-logo-wrap">
-        <img src="mindbuy-logo.png" alt="MindBuy" style="height:72px;width:auto;object-fit:contain;" />
+        <img src="/logo.png" alt="MindBuy" style="height:72px;width:auto;object-fit:contain;" />
       </div>
-      <h1 class="auth-form-title">Crear cuenta</h1>
-      <p class="auth-form-sub">Es gratis y toma menos de 2 minutos.</p>
-      <div class="form-stack">
-        <div class="field"><label>Nombre Completo</label><input type="text" id="reg-name" placeholder="Tu nombre completo" /></div>
-        <div class="field"><label>Ocupación</label>
-          <select id="reg-occupation">
-            <option value="">Seleccionar…</option>
-            <option>Estudiante</option>
-            <option>Profesional independiente</option>
-            <option>Empleado</option>
-            <option>Emprendedor</option>
-            <option>Docente / Investigador</option>
-            <option>Otro</option>
-          </select>
+      <h2 class="auth-form-title">Crear Cuenta</h2>
+      <p class="auth-form-sub">Comienza tu camino hacia el consumo consciente.</p>
+      <form class="form-stack" id="register-form">
+        <div class="field">
+          <label>Nombre Completo</label>
+          <input type="text" id="reg-name" placeholder="Tu nombre" required autocomplete="name" />
         </div>
-        <div class="field"><label>Correo Electrónico</label><input type="email" id="reg-email" placeholder="tu@correo.com" /></div>
-        <div class="field"><label>Contraseña</label><input type="password" id="reg-password" placeholder="Mínimo 8 caracteres" /></div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="reg-email" placeholder="tu@ejemplo.com" required autocomplete="email" />
+        </div>
+        <div class="field">
+          <label>Contraseña</label>
+          <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required autocomplete="new-password" />
+        </div>
         <div class="form-actions">
-          <button class="btn btn-primary btn-full btn-lg" id="btn-register">Crear mi cuenta →</button>
+          <button type="submit" class="btn btn-primary btn-full">Registrarse →</button>
         </div>
+      </form>
+      <div class="form-footer">
+        ¿Ya tienes cuenta? <button onclick="showAuthView('login')">Inicia sesión</button>
       </div>
-      <p class="form-footer">¿Ya tienes cuenta? <button onclick="showView('login')">Iniciar sesión</button></p>
     </div>
   </div>
 </div>
 
-<!-- NAVBAR -->
 <nav class="navbar" id="main-nav" style="display:none">
-  <!-- ✅ LOGO REAL en navbar — más pequeño -->
   <div class="logo">
-    <img src="logomind.png" alt="MindBuy" style="height:36px;width:auto;object-fit:contain;" />
+    <img src="/logo.png" alt="MindBuy" style="height:36px;width:auto;object-fit:contain;" />
   </div>
-  <ul class="nav-links" id="nav-links">
+  <ul class="nav-links">
     <li class="nav-link active" data-view="dashboard">Inicio</li>
-    <li class="nav-link" data-view="tracker">Mis compras</li>
+    <li class="nav-link" data-view="quiz" onclick="initQuiz()">Evaluación</li>
+    <li class="nav-link" data-view="tracker">Mi Rastreador</li>
     <li class="nav-link" data-view="goals">Metas</li>
-    <li class="nav-link" data-view="quiz">Evaluación</li>
-    <li class="nav-link" data-view="guide">Alternativas</li>
+    <li class="nav-link" data-view="guide">Guía Sostenible</li>
     <li class="nav-link" data-view="history">Historial</li>
   </ul>
   <div class="nav-user">
-    <span class="nav-username" id="nav-username"></span>
-    <div class="avatar" id="nav-avatar">?</div>
-    <button class="btn btn-ghost btn-sm" id="btn-logout">Salir</button>
+    <span class="nav-username" id="nav-user-name">Usuario</span>
+    <div class="avatar" id="nav-avatar" title="Cerrar Sesión" onclick="logout()" style="cursor:pointer">U</div>
   </div>
 </nav>
 
-<!-- DASHBOARD -->
 <div id="view-dashboard" class="view">
   <div class="dash-hero">
     <div class="dash-hero-inner">
-      <p class="dash-eyebrow" id="dash-time-label">Buenos días ☀️</p>
-      <h1 class="dash-greeting" id="dash-greeting">Hola, Participante</h1>
-      <p class="dash-sub">Aquí está tu resumen de impacto consciente.</p>
+      <div class="dash-eyebrow">✨ Panel Principal</div>
+      <h1 class="dash-greeting">Hola, <span id="dash-user-name">Inversionista Consciente</span></h1>
+      <p class="dash-sub">Bienvenido a tu espacio de deliberación. Hoy es un buen día para comprar menos y vivir más.</p>
     </div>
   </div>
+
   <div class="stats-row">
-    <div class="stat-card c-sage"><div class="stat-icon">🌿</div><div class="stat-val"><span class="count-up" data-target="4.2">0</span><sup>kg CO₂</sup></div><div class="stat-label">Huella evitada este mes</div><div class="stat-delta">↓ 18% vs. mes anterior</div></div>
-    <div class="stat-card c-amber"><div class="stat-icon">💰</div><div class="stat-val">$<span class="count-up" data-target="127">0</span></div><div class="stat-label">Ahorrado en compras impulsivas</div><div class="stat-delta">↑ 32% vs. mes anterior</div></div>
-    <div class="stat-card c-teal"><div class="stat-icon">🛍️</div><div class="stat-val"><span class="count-up" data-target="9">0</span><sup>artículos</sup></div><div class="stat-label">Compras impulsivas evitadas</div><div class="stat-delta">Este mes</div></div>
-    <div class="stat-card c-rose"><div class="stat-icon">♻️</div><div class="stat-val"><span class="count-up" data-target="3">0</span><sup>marcas</sup></div><div class="stat-label">Alternativas sostenibles usadas</div><div class="stat-delta">Descubriste esta semana</div></div>
+    <div class="stat-card c-sage">
+      <div class="stat-icon">🌱</div>
+      <div class="stat-val" id="stat-index">--<sub>/100</sub></div>
+      <div class="stat-label">Índice Conciencia</div>
+      <div class="stat-delta" id="stat-profile-name">Sin evaluar</div>
+    </div>
+    <div class="stat-card c-amber">
+      <div class="stat-icon">💰</div>
+      <div class="stat-val">$<span id="stat-saved" class="count-up">0</span></div>
+      <div class="stat-label">Ahorro Estimado</div>
+      <div class="stat-delta" style="color:var(--amber)">Evitando impulsos</div>
+    </div>
+    <div class="stat-card c-teal">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-val" id="stat-goals">0/0</div>
+      <div class="stat-label">Metas de Consumo</div>
+      <div class="stat-delta">En cumplimiento</div>
+    </div>
+    <div class="stat-card c-rose">
+      <div class="stat-icon">🛍️</div>
+      <div class="stat-val" id="stat-impúlses">0</div>
+      <div class="stat-label">Alertas de Impulso</div>
+      <div class="stat-delta" style="color:var(--red)">Detenidas a tiempo</div>
+    </div>
   </div>
+
   <div class="dash-grid">
-    <div>
-      <p class="section-eyebrow">¿Sabías que…?</p>
-      <p class="section-title">Datos que cambian perspectivas</p>
-      <div class="fact-slider">
-        <div class="fact-slides-wrap">
-          <div class="fact-slides" id="fact-slides">
-            <div class="fact-slide"><div class="fact-number">Dato 01</div><p class="fact-text">La industria de la moda rápida es responsable del 10% de las emisiones mundiales de carbono.</p><p class="fact-source">— UNEP, 2023</p></div>
-            <div class="fact-slide"><div class="fact-number">Dato 02</div><p class="fact-text">El colombiano promedio devuelve el 30% de lo que compra online, generando más emisiones que la compra misma.</p><p class="fact-source">— MinCIT Colombia, 2023</p></div>
-            <div class="fact-slide"><div class="fact-number">Dato 03</div><p class="fact-text">Comprar una prenda de segunda mano reduce su huella de carbono hasta un 82% comparado con una nueva.</p><p class="fact-source">— ThredUp Impact Report, 2022</p></div>
-            <div class="fact-slide"><div class="fact-number">Dato 04</div><p class="fact-text">El 73% de los consumidores millennials paga más por productos de marcas sostenibles si confían en ellas.</p><p class="fact-source">— Nielsen Global Survey, 2023</p></div>
-            <div class="fact-slide"><div class="fact-number">Dato 05</div><p class="fact-text">Esperar 48 horas antes de una compra impulsiva reduce la probabilidad de realizarla en un 64%.</p><p class="fact-source">— Journal of Consumer Psychology, 2021</p></div>
-          </div>
-        </div>
-        <div class="fact-controls">
-          <div class="fact-dots" id="fact-dots"></div>
-          <div class="fact-arrows">
-            <div class="fact-arrow" id="fact-prev">←</div>
-            <div class="fact-arrow" id="fact-next">→</div>
+    <div class="card dash-span2">
+      <div class="card-header">Acción Inmediata</div>
+      <div class="card-body">
+        <div class="cta-card">
+          <div class="cta-icon">🧠</div>
+          <div>
+            <h3>¿Sientes el impulso de comprar algo justo ahora?</h3>
+            <p>Antes de ingresar tu tarjeta en cualquier tienda en línea, pasa el producto por nuestro test de deliberación de 10 segundos. Descubre si es una necesidad real o un disparo de dopamina transitorio.</p>
+            <div class="cta-actions">
+              <button class="btn btn-primary" onclick="showView('tracker')">Procesar un Antojo →</button>
+              <button class="btn btn-outline" onclick="showView('quiz');initQuiz()">Actualizar mi Perfil Sostenible</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div>
-      <p class="section-eyebrow">Cómo funciona</p>
-      <p class="section-title">Tu camino hacia el consumo consciente</p>
-      <div class="card"><div class="card-body">
-        <div class="timeline">
-          <div class="tl-item"><div class="tl-left"><div class="tl-dot">1</div><div class="tl-line"></div></div><div class="tl-content"><p class="tl-title">Regístrate y conoce tu perfil</p><p class="tl-desc">Crea tu cuenta y descubre cómo son tus hábitos actuales de consumo digital.</p></div></div>
-          <div class="tl-item"><div class="tl-left"><div class="tl-dot">2</div><div class="tl-line"></div></div><div class="tl-content"><p class="tl-title">Completa la evaluación</p><p class="tl-desc">12 preguntas que analizan tu relación con las compras online y la sostenibilidad.</p></div></div>
-          <div class="tl-item"><div class="tl-left"><div class="tl-dot">3</div><div class="tl-line"></div></div><div class="tl-content"><p class="tl-title">Registra tus compras</p><p class="tl-desc">Lleva un diario de tus compras y clasifícalas para entender tus patrones reales.</p></div></div>
-          <div class="tl-item"><div class="tl-left"><div class="tl-dot">4</div><div class="tl-line"></div></div><div class="tl-content"><p class="tl-title">Fíjate metas y mide tu progreso</p><p class="tl-desc">Establece compromisos sostenibles y celebra cada avance.</p></div></div>
+
+    <div class="card dash-span2 decor-card">
+      <img src="/monstera-removebg-preview.png" alt="" class="card-bg-monstera" />
+      <div class="card-header">Recursos e Inspiración</div>
+      <div class="card-body" style="display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1;">
+        
+        <div>
+          <h4 style="font-weight: 600; font-size: .9rem; margin-bottom: 12px; color: var(--ink2);">Galería MindBuy</h4>
+          <div class="photo-carousel">
+            <div class="photo-slides" id="photo-slides">
+              <div class="photo-slide"><img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80" alt="Consumo responsable"></div>
+              <div class="photo-slide"><img src="https://images.unsplash.com/photo-1532884928231-ef40895eb654?auto=format&fit=crop&w=1200&q=80" alt="Estilo de vida minimalista"></div>
+              <div class="photo-slide"><img src="https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80" alt="Naturaleza y conciencia"></div>
+            </div>
+            <button class="p-carousel-arrow prev" onclick="movePhotoSlide(-1)">❮</button>
+            <button class="p-carousel-arrow next" onclick="movePhotoSlide(1)">❯</button>
+            <div class="p-carousel-dots" id="photo-dots">
+              <span class="p-dot active" onclick="currentPhotoSlide(0)"></span>
+              <span class="p-dot" onclick="currentPhotoSlide(1)"></span>
+              <span class="p-dot" onclick="currentPhotoSlide(2)"></span>
+            </div>
+          </div>
         </div>
-      </div></div>
+
+        <div>
+          <h4 style="font-weight: 600; font-size: .9rem; margin-bottom: 12px; color: var(--ink2);">Video Educativo</h4>
+          <div class="video-wrap">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="MindBuy Video" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
     </div>
-    <div>
-      <p class="section-eyebrow">Video introductorio</p>
-      <p class="section-title">Entiende el impacto</p>
-      <div class="card"><div class="card-body" style="padding:16px">
-        <div class="video-wrap"><iframe src="https://www.youtube.com/embed/BiSYoeqb_VY?rel=0" title="Consumo consciente" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-        <p style="font-size:.8rem;color:var(--ink3);margin-top:12px;line-height:1.6"><strong>The True Cost</strong> — Documental sobre el verdadero precio de la moda rápida.</p>
-      </div></div>
+
+    <div class="card">
+      <div class="card-header">Datos clave del Hiperconsumo</div>
+      <div class="card-body">
+        <div class="fact-slider" id="fact-slider">
+          <div class="fact-slides-wrap">
+            <div class="fact-slides" id="fact-slides-inner">
+              </div>
+          </div>
+          <div class="fact-controls">
+            <div class="fact-dots" id="fact-slider-dots"></div>
+            <div class="fact-arrows">
+              <div class="fact-arrow" onclick="moveFact(-1)">❮</div>
+              <div class="fact-arrow" onclick="moveFact(1)">❯</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div>
-      <p class="section-eyebrow">Acción inmediata</p>
-      <p class="section-title">¿Por dónde empezar?</p>
-      <div class="cta-card" style="margin-bottom:14px"><div class="cta-icon">🧠</div><div><h3>Evaluación de Hábitos</h3><p>12 preguntas que analizan tus patrones de compra digital. Toma 3 minutos.</p><div class="cta-actions"><button class="btn btn-primary btn-sm" onclick="showView('quiz');initQuiz()">Comenzar →</button></div></div></div>
-      <div class="cta-card"><div class="cta-icon">📋</div><div><h3>Registrar una compra</h3><p>Anota tu última compra y clasifícala para empezar tu diario.</p><div class="cta-actions"><button class="btn btn-outline btn-sm" onclick="showView('tracker')">Ir al tracker →</button></div></div></div>
-    </div>
-    <div class="dash-span2">
-      <p class="section-eyebrow">Alternativas sostenibles</p>
-      <p class="section-title">Marcas que cuidan el planeta</p>
-      <div class="alt-grid">
-        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">👗</div><p class="alt-card-name">Patagonia</p><p class="alt-card-cat">Outdoor sostenible</p></div>
-        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">👟</div><p class="alt-card-name">Allbirds</p><p class="alt-card-cat">Calzado mínima huella</p></div>
-        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🔄</div><p class="alt-card-name">ThredUp</p><p class="alt-card-cat">Segunda mano curada</p></div>
-        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🌳</div><p class="alt-card-name">Tentree</p><p class="alt-card-cat">10 árboles por compra</p></div>
-        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🛍️</div><p class="alt-card-name">Vinted</p><p class="alt-card-cat">Intercambio de ropa</p></div>
-        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🧴</div><p class="alt-card-name">Lush</p><p class="alt-card-cat">Cosmética sin plástico</p></div>
-        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">💻</div><p class="alt-card-name">Back Market</p><p class="alt-card-cat">Tech reacondicionado</p></div>
-        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🏔️</div><p class="alt-card-name">Eileen Fisher</p><p class="alt-card-cat">Moda atemporal</p></div>
+
+    <div class="card">
+      <div class="card-header">Tu Camino de Aprendizaje</div>
+      <div class="card-body">
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot">1</div><div class="tl-line"></div></div>
+            <div class="tl-content">
+              <h4 class="tl-title">Auto-diagnóstico inicial</h4>
+              <p class="tl-desc">Identifica tus sesgos cognitivos frente al marketing digital resolviendo el quiz psicométrico.</p>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot">2</div><div class="tl-line"></div></div>
+            <div class="tl-content">
+              <h4 class="tl-title">La regla de las 72 horas</h4>
+              <p class="tl-desc">Usa el Rastreador para enfriar tus impulsos de compra. Si tras 3 días aún lo necesitas, es una compra válida.</p>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot">3</div></div>
+            <div class="tl-content">
+              <h4 class="tl-title">Sustitución Ética</h4>
+              <p class="tl-desc">Consulta la Guía para migrar tus consumos cotidianos hacia marcas locales, circulares o de residuo cero.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- TRACKER -->
 <div id="view-tracker" class="view">
-  <div class="page-hero"><h1>Mis Compras</h1><p>Registra y clasifica tus compras para entender tus patrones de consumo.</p></div>
+  <div class="page-hero">
+    <h1>Rastreador de Decisiones de Compra</h1>
+    <p>Registra tus impulsos, somételos a votación mental y analiza cuánto dinero liberas al mes.</p>
+  </div>
   <div class="tracker-layout">
     <div class="tracker-summary">
-      <div class="ts-card"><div class="ts-val" id="ts-total">$0</div><div class="ts-label">Total registrado</div></div>
-      <div class="ts-card"><div class="ts-val" id="ts-impulsiva">0</div><div class="ts-label">Compras impulsivas</div></div>
-      <div class="ts-card"><div class="ts-val" id="ts-count">0</div><div class="ts-label">Compras registradas</div></div>
+      <div class="ts-card"><div class="ts-val" id="ts-total-registered">0</div><div class="ts-label">Evaluados</div></div>
+      <div class="ts-card"><div class="ts-val" style="color:var(--sage)" id="ts-total-saved">$0</div><div class="ts-label">Dinero Salvado</div></div>
+      <div class="ts-card"><div class="ts-val" style="color:#c07080" id="ts-total-impulsive">0%</div><div class="ts-label">Tasa de Impulso</div></div>
     </div>
     <div class="tracker-form-card">
-      <p class="section-eyebrow">Nueva compra</p>
-      <p class="section-title" style="margin-bottom:0">Registrar compra</p>
-      <div class="tracker-form-grid">
-        <div class="field"><label>Producto</label><input type="text" id="tr-product" placeholder="Ej: Camiseta SHEIN" /></div>
-        <div class="field"><label>Monto (COP)</label><input type="number" id="tr-amount" placeholder="0" min="0" /></div>
-        <div class="field"><label>Tipo</label><select id="tr-type"><option value="necesaria">✅ Necesaria</option><option value="planeada">📋 Planeada</option><option value="impulsiva">⚡ Impulsiva</option></select></div>
-        <div style="display:flex;align-items:flex-end"><button class="btn btn-primary btn-full" id="btn-add-purchase">+ Agregar</button></div>
-      </div>
+      <h3 style="font-weight:600;margin-bottom:4px;">Interceptar nuevo artículo</h3>
+      <p style="font-size:.82rem;color:var(--ink3);margin-bottom:16px;">Introduce los detalles del objeto que estás tentado a adquirir.</p>
+      <form id="tracker-form" class="tracker-form-grid">
+        <div class="field">
+          <label>Nombre del Objeto</label>
+          <input type="text" id="track-name" placeholder="Ej. Chaqueta de cuero, Audífonos" required />
+        </div>
+        <div class="field">
+          <label>Precio estimado ($)</label>
+          <input type="number" id="track-amount" placeholder="0.00" required min="0" step="any" />
+        </div>
+        <div class="field">
+          <label>Clasificación Inicial</label>
+          <select id="track-type">
+            <option value="impulsiva">Deseo Impulsivo (Antojo)</option>
+            <option value="planeada">Compra Planeada / Necesaria</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="height:46px;">Analizar →</button>
+      </form>
     </div>
-    <p class="section-eyebrow" style="margin-bottom:12px">Historial de compras</p>
+    <h3 class="section-title" style="margin-bottom:12px;">Bitácora de Decisiones</h3>
     <div class="purchase-list" id="purchase-list">
-      <div class="empty-state"><div class="empty-state-icon">🛒</div><p class="empty-state-title">Aún no hay compras registradas</p><p class="empty-state-sub">Registra tu primera compra arriba para empezar a rastrear tus hábitos.</p></div>
-    </div>
+      </div>
   </div>
 </div>
 
-<!-- GOALS -->
 <div id="view-goals" class="view">
-  <div class="page-hero"><h1>Mis Metas</h1><p>Define compromisos hacia un consumo más consciente y mide tu avance.</p></div>
+  <div class="page-hero">
+    <h1>Tus Compromisos de Reducción</h1>
+    <p>Establece límites de gasto o cantidades máximas de objetos para recuperar tu sobriedad material.</p>
+  </div>
   <div class="goals-layout">
     <div class="goal-add-card">
-      <p class="section-eyebrow">Nueva meta</p>
-      <p class="section-title" style="margin-bottom:0">Crear compromiso</p>
-      <div class="goal-form-grid">
-        <div class="field"><label>Título de la meta</label><input type="text" id="goal-title" placeholder="Ej: No comprar fast fashion en 30 días" /></div>
-        <div class="field"><label>Categoría</label><select id="goal-category"><option value="consumo">🛍️ Consumo</option><option value="presupuesto">💰 Presupuesto</option><option value="sostenibilidad">🌿 Sostenibilidad</option><option value="habitos">🧠 Hábitos</option></select></div>
-        <div class="field" style="grid-column:span 2"><label>Descripción</label><input type="text" id="goal-desc" placeholder="Describe cómo vas a lograr esta meta..." /></div>
-      </div>
-      <button class="btn btn-primary mt-4" id="btn-add-goal">+ Agregar meta</button>
+      <h3 style="font-weight:600;">Establecer Meta Personal</h3>
+      <form id="goal-form" class="goal-form-grid">
+        <div class="field" style="grid-column:span 2">
+          <label>Descripción del compromiso</label>
+          <input type="text" id="goal-title" placeholder="Ej. No comprar ropa nueva por 3 meses, Limitar cafés externos" required />
+        </div>
+        <div class="field">
+          <label>Meta Numérica (Opcional)</label>
+          <input type="number" id="goal-target" placeholder="Ej. 100000 o 3" />
+        </div>
+        <div class="field">
+          <label>Unidad de medida</label>
+          <input type="text" id="goal-unit" placeholder="Ej. Pesos, Veces, Unidades" />
+        </div>
+        <button type="submit" class="btn btn-primary mt-4" style="grid-column:span 2">Crear Compromiso →</button>
+      </form>
     </div>
-    <p class="section-eyebrow" style="margin-bottom:12px">Compromisos activos</p>
     <div id="goals-list">
-      <div class="goal-card" data-id="g0">
-        <div class="goal-header"><div><p class="goal-title">🛍️ Evitar compras en SHEIN o Temu por 30 días</p><p class="goal-desc">Explorar alternativas de segunda mano como Vinted antes de recurrir al fast fashion.</p></div><span class="goal-status status-active">Activa</span></div>
-        <div class="progress"><div class="progress-fill" style="width:45%"></div></div>
-        <div class="goal-footer"><span class="goal-pct">45% completado</span><button class="btn btn-sm btn-outline" onclick="toggleGoal(this, 'g0')">Marcar como lograda</button></div>
       </div>
-      <div class="goal-card" data-id="g1">
-        <div class="goal-header"><div><p class="goal-title">💰 Registrar todas mis compras durante un mes</p><p class="goal-desc">Anotar cada compra online, sin importar el monto, para tener consciencia real del gasto.</p></div><span class="goal-status status-active">Activa</span></div>
-        <div class="progress"><div class="progress-fill" style="width:70%"></div></div>
-        <div class="goal-footer"><span class="goal-pct">70% completado</span><button class="btn btn-sm btn-outline" onclick="toggleGoal(this, 'g1')">Marcar como lograda</button></div>
-      </div>
-    </div>
   </div>
 </div>
 
-<!-- QUIZ -->
 <div id="view-quiz" class="view">
+  <div class="page-hero">
+    <h1>Evaluación Psicométrica de Consumo</h1>
+    <p>Descubre qué arquetipo de comprador posees y cómo responde tu mente a las estrategias del e-commerce.</p>
+  </div>
   <div class="quiz-layout">
     <div class="quiz-header">
-      <div class="quiz-meta"><span class="quiz-step" id="quiz-step">Pregunta 1 de 12</span><span class="quiz-step" id="quiz-time">⏱ ~3 min</span></div>
-      <div class="progress"><div class="progress-fill" id="quiz-progress" style="width:8%"></div></div>
+      <div class="quiz-meta">
+        <span class="quiz-step" id="quiz-progress-text">Pregunta 1 de 5</span>
+        <span class="badge badge-sage" id="quiz-category-badge">Sesgos</span>
+      </div>
+      <div class="progress"><div class="progress-fill" id="quiz-progress-bar" style="width: 20%"></div></div>
     </div>
-    <div id="quiz-question-container"></div>
+    <div id="quiz-card-container">
+      </div>
     <div class="quiz-nav">
-      <button class="btn btn-ghost" id="quiz-prev" onclick="quizPrev()" style="visibility:hidden">← Anterior</button>
-      <button class="btn btn-primary" id="quiz-next" onclick="quizNext()">Siguiente →</button>
+      <button class="btn btn-outline btn-sm" id="quiz-prev-btn" onclick="quizPrev()" style="visibility:hidden">← Anterior</button>
+      <button class="btn btn-primary btn-sm" id="quiz-next-btn" onclick="quizNext()">Siguiente →</button>
     </div>
   </div>
 </div>
 
-<!-- RESULTS -->
 <div id="view-results" class="view">
   <div class="results-layout">
     <div class="results-hero">
-      <div class="results-score" id="result-score">72</div>
-      <p class="results-score-label">Puntuación de consumo consciente</p>
-      <h2 class="results-title" id="result-title">Consumidor en Transición</h2>
-      <p class="results-desc" id="result-desc">Tienes buenos instintos pero aún hay áreas de mejora.</p>
+      <div class="results-score" id="res-score">00</div>
+      <div class="results-score-label">Puntaje global de conciencia</div>
+      <h2 class="results-title" id="res-title">Analizando tu perfil...</h2>
+      <p class="results-desc" id="res-desc">Espera un momento mientras procesamos tus respuestas.</p>
+      <div class="results-actions">
+        <button class="btn btn-primary btn-amber" onclick="showView('dashboard')">Ir a mi Panel de Control</button>
+        <button class="btn btn-outline" style="color:var(--white);border-color:rgba(255,255,255,.3);" onclick="showView('quiz');initQuiz()">Repetir Test</button>
+      </div>
     </div>
-    <div class="results-grid">
-      <div class="card"><div class="card-header">Análisis por Categoría</div><div class="card-body"><div id="result-bars"></div></div></div>
-      <div class="card"><div class="card-header">Tus Fortalezas</div><div class="card-body"><div id="result-strengths"></div></div></div>
-    </div>
-    <div class="card" style="margin-bottom:16px"><div class="card-header">Próximos pasos recomendados</div><div class="card-body"><div id="result-steps" style="display:flex;flex-direction:column;gap:12px"></div></div></div>
-    <div class="results-actions">
-      <button class="btn btn-primary" onclick="showView('guide')">Ver alternativas →</button>
-      <button class="btn btn-outline" onclick="showView('quiz');initQuiz()">Repetir evaluación</button>
-      <button class="btn btn-ghost" onclick="showView('dashboard')">Volver al panel</button>
+    <div class="card">
+      <div class="card-header">Desglose analítico de conducta</div>
+      <div class="card-body" id="res-breakdown">
+        </div>
     </div>
   </div>
 </div>
 
-<!-- GUIDE -->
 <div id="view-guide" class="view">
+  <div class="guide-hero">
+    <h1>Ecosistema de Alternativas</h1>
+    <p>Directorio curado de marcas, plataformas y cooperativas que operan bajo lógicas circulares, de comercio justo o impacto neto positivo.</p>
+  </div>
   <div class="guide-layout">
-    <div class="guide-hero">
-      <h1>Alternativas Conscientes<br />al Fast Fashion Digital</h1>
-      <p>Cada compra es una decisión. Aquí encontrarás marcas verificadas, plataformas de segunda mano y recursos que alinean tu consumo con tus valores.</p>
-    </div>
     <div class="category-tabs" id="guide-tabs">
-      <button class="category-tab active" data-cat="all">Todo</button>
-      <button class="category-tab" data-cat="ropa">👗 Ropa</button>
-      <button class="category-tab" data-cat="calzado">👟 Calzado</button>
-      <button class="category-tab" data-cat="segunda">♻️ Segunda mano</button>
-      <button class="category-tab" data-cat="cosmetica">🧴 Cosmética</button>
-      <button class="category-tab" data-cat="hogar">🏠 Hogar</button>
-      <button class="category-tab" data-cat="tech">💻 Tecnología</button>
+      <button class="category-tab active" data-cat="todas">Todas</button>
+      <button class="category-tab" data-cat="moda">Moda Circular</button>
+      <button class="category-tab" data-cat="tecnologia">Tecnología Sostenible</button>
+      <button class="category-tab" data-cat="hogar">Residuo Cero / Hogar</button>
     </div>
-    <div class="brands-grid" id="brands-grid"></div>
+    <div class="brands-grid" id="brands-grid">
+      </div>
   </div>
 </div>
 
-<!-- HISTORY -->
 <div id="view-history" class="view">
-  <div class="page-hero"><h1>Historial de Evaluaciones</h1><p>Revisa tus resultados anteriores y observa tu evolución.</p></div>
+  <div class="page-hero">
+    <h1>Historial de Evaluaciones</h1>
+    <p>Observa tu evolución en el tiempo y comprueba si tus niveles de compra compulsiva disminuyen con las herramientas de MindBuy.</p>
+  </div>
   <div class="history-layout">
-    <div id="history-list">
-      <div class="empty-state"><div class="empty-state-icon">📊</div><p class="empty-state-title">Aún no tienes evaluaciones</p><p class="empty-state-sub">Completa el quiz por primera vez para ver tu historial aquí.</p><button class="btn btn-primary mt-6" onclick="showView('quiz');initQuiz()">Hacer mi primera evaluación →</button></div>
-    </div>
+    <div id="history-list"></div>
   </div>
 </div>
 
 <script>
-const SUPABASE_URL  = 'https://YOUR_PROJECT.supabase.co';
-const SUPABASE_ANON = 'YOUR_ANON_KEY';
-const { createClient } = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
-
-let currentUser = null, quizAnswers = {}, currentQuestion = 0, factSlide = 0;
-let purchases = [], goals = [], quizHistory = [];
-const FACT_COUNT = 5;
-
-const questions = [
-  { id:'q1',  cat:'Frecuencia',     text:'¿Con qué frecuencia realizas compras en plataformas como Temu, SHEIN o similares?',            opts:['Nunca','A veces (1-2 veces al mes)','Frecuentemente (1-2 veces a la semana)','Constantemente (casi todos los días)'] },
-  { id:'q2',  cat:'Comportamiento', text:'¿Revisas reseñas y la procedencia de los productos antes de comprar?',                         opts:['Siempre lo hago','La mayoría de las veces','Rara vez','Nunca lo hago'] },
-  { id:'q3',  cat:'Impulsividad',   text:'¿Con qué frecuencia compras artículos que no estaban en tu lista inicial?',                    opts:['Nunca','Ocasionalmente','Con frecuencia','Siempre'] },
-  { id:'q4',  cat:'Presupuesto',    text:'¿Llevas un registro de cuánto gastas mensualmente en compras online?',                         opts:['Sí, con detalle','Aproximadamente','Raramente','No llevo registro'] },
-  { id:'q5',  cat:'Sostenibilidad', text:'¿Consideras el impacto ambiental de un producto antes de comprarlo?',                          opts:['Siempre','Con frecuencia','Pocas veces','Nunca'] },
-  { id:'q6',  cat:'Segunda mano',   text:'¿Has comprado o considerarías comprar ropa o artículos de segunda mano?',                      opts:['Sí, lo hago regularmente','Lo he hecho alguna vez','Lo consideraría','No me interesa'] },
-  { id:'q7',  cat:'Emociones',      text:'¿Tus compras online están motivadas principalmente por?',                                      opts:['Necesidad real','Ofertas o descuentos','Aburrimiento o estrés','Influencia de redes sociales'] },
-  { id:'q8',  cat:'Devoluciones',   text:'¿Con qué frecuencia devuelves artículos que compraste online?',                                opts:['Nunca los devuelvo','Ocasionalmente','Con frecuencia','Casi siempre'] },
-  { id:'q9',  cat:'Información',    text:'¿Investigas las condiciones laborales de las marcas donde compras?',                           opts:['Sí, es importante para mí','A veces lo hago','Rara vez','No suelo hacerlo'] },
-  { id:'q10', cat:'Hábitos',        text:'¿Cuánto tiempo del día dedicas a navegar tiendas online (sin necesidad de comprar)?',          opts:['Menos de 15 min','Entre 15 min y 1 hora','Entre 1 y 3 horas','Más de 3 horas'] },
-  { id:'q11', cat:'Alternativas',   text:'¿Conoces marcas o plataformas de comercio sostenible como alternativa al fast fashion?',       opts:['Sí, y las uso regularmente','Las conozco pero no las uso','He oído de algunas','No las conozco'] },
-  { id:'q12', cat:'Cambio',         text:'¿Estarías dispuesto/a a pagar un poco más por un producto si sabes que es ético y sostenible?',opts:['Sí, definitivamente','Dependiendo del precio','Lo dudaría','No pagaría más'] },
-];
-const scores = [3,2,1,0];
-
-const brands = [
-  { name:'Patagonia',    icon:'🏔️', tagline:'Outdoor con responsabilidad', cat:'ropa',      badges:['B Corp','Orgánico','Reciclado'], stars:5, desc:'Ropa outdoor de alta calidad con programa de reparación y reciclaje.' },
-  { name:'Tentree',      icon:'🌳', tagline:'10 árboles por cada compra',   cat:'ropa',      badges:['B Corp','Neutro carbono'], stars:5, desc:'Empresa de ropa que planta 10 árboles por cada artículo vendido.' },
-  { name:'Eileen Fisher',icon:'✂️', tagline:'Moda atemporal sostenible',    cat:'ropa',      badges:['Orgánico','Comercio justo'], stars:4, desc:'Diseños minimalistas con enfoque en longevidad y materiales sostenibles.' },
-  { name:'Allbirds',     icon:'🐑', tagline:'Calzado de lana natural',      cat:'calzado',   badges:['Neutro carbono','Reciclado'], stars:5, desc:'Zapatillas cómodas fabricadas con lana merino y caña de azúcar.' },
-  { name:'Veja',         icon:'👟', tagline:'Sneakers éticos de Brasil',    cat:'calzado',   badges:['Comercio justo','Orgánico'], stars:4, desc:'Calzado producido con algodón orgánico y jebe amazónico certificado.' },
-  { name:'ThredUp',      icon:'🔄', tagline:'Segunda mano curada online',   cat:'segunda',   badges:['Economía circular','Verificado'], stars:4, desc:'La mayor plataforma de ropa usada de alta calidad para mujer y niños.' },
-  { name:'Vinted',       icon:'🛍️', tagline:'Compra y vende sin comisión', cat:'segunda',   badges:['P2P','Sin comisión vendedor'], stars:4, desc:'Plataforma europea líder en intercambio de ropa entre particulares.' },
-  { name:'Depop',        icon:'📸', tagline:'Moda vintage y única',         cat:'segunda',   badges:['Comunidad','Vintage'], stars:4, desc:'Mercado social de moda de segunda mano con enfoque en piezas únicas.' },
-  { name:'Lush',         icon:'🛁', tagline:'Cosmética fresca, sin plástico',cat:'cosmetica', badges:['Sin empaques','Vegano','Cruelty-free'], stars:5, desc:'Cosmética artesanal con mínimo embalaje y sin ingredientes animales.' },
-  { name:'The Body Shop',icon:'🌸', tagline:'Belleza con propósito',        cat:'cosmetica', badges:['B Corp','Comercio justo'], stars:4, desc:'Marca pionera en cosmética ética y activismo social desde 1976.' },
-  { name:'IKEA Segundo', icon:'🪑', tagline:'Muebles de segunda mano IKEA', cat:'hogar',     badges:['Economía circular','Reciclado'], stars:4, desc:'Programa Buy Back de IKEA para revender tus muebles usados.' },
-  { name:'Back Market',  icon:'💻', tagline:'Tech reacondicionado premium', cat:'tech',      badges:['Verificado','Garantía 1 año'], stars:5, desc:'Plataforma de dispositivos reacondicionados con garantía completa.' },
-  { name:'Swappa',       icon:'📱', tagline:'Smartphones usados verificados',cat:'tech',     badges:['Sin robots','P2P','Verificado'], stars:4, desc:'Mercado de teléfonos y tech usado revisado por personas reales.' },
+/* ══════════════════════════════════════
+   ESTADOS Y VARIABLES GLOBALES
+══════════════════════════════════════ */
+let currentUser = null;
+let currentProfile = { score: 0, title: 'No Evaluado', class: 'Sin evaluar' };
+let purchases = [];
+let goals = [
+  { id: 1, title: 'Evitar comprar ropa fast-fashion este trimestre', target: 1, current: 0, unit: 'Trimestre', status: 'active' },
+  { id: 2, title: 'Reducir el gasto mensual en gadgets / tecnología', target: 50000, current: 12000, unit: 'Pesos', status: 'active' }
 ];
 
-function showView(name) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  const el = document.getElementById('view-' + name);
-  if (el) el.classList.add('active');
-  const hasNav = ['dashboard','tracker','goals','quiz','results','guide','history'].includes(name);
-  document.getElementById('main-nav').style.display = hasNav ? 'flex' : 'none';
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.view === name));
-  if (name === 'dashboard') animateCounters();
-  if (name === 'guide') renderBrands('all');
-  if (name === 'tracker') renderPurchases();
-  if (name === 'history') renderHistory();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+const facts = [
+  { n: "Dato 01", t: "El 80% de los objetos que compramos en economías occidentales se usan solo una vez y luego se archivan o descartan.", s: "Story of Stuff Project" },
+  { n: "Dato 02", t: "Las interfaces de comercio electrónico usan 'patrones oscuros' como contadores regresivos falsos para inducir ansiedad y forzar la compra.", s: "Princeton University Research" },
+  { n: "Dato 03", t: "Esperar 72 horas antes de finiquitar un carrito digital elimina hasta el 70% de las compras de las cuales nos hubiéramos arrepentido.", s: "Journal of Consumer Psychology" }
+];
+let currentFactIdx = 0;
+
+/* 📸 LÓGICA DEL CARRUSEL DE FOTOS */
+let currentPhotoIdx = 0;
+const totalPhotoSlides = 3;
+
+function movePhotoSlide(direction) {
+    currentPhotoIdx += direction;
+    if (currentPhotoIdx >= totalPhotoSlides) currentPhotoIdx = 0;
+    if (currentPhotoIdx < 0) currentPhotoIdx = totalPhotoSlides - 1;
+    updatePhotoCarousel();
 }
 
-function toast(title, msg='', error=false) {
-  const c = document.getElementById('toast-container');
-  const t = document.createElement('div');
-  t.className = 'toast' + (error ? ' error' : '');
-  t.innerHTML = `<div class="toast-icon">${error?'⚠️':'✅'}</div><div><div class="toast-title">${title}</div>${msg?`<div class="toast-msg">${msg}</div>`:''}</div>`;
-  c.appendChild(t); setTimeout(() => t.remove(), 4200);
+function currentPhotoSlide(index) {
+    currentPhotoIdx = index;
+    updatePhotoCarousel();
 }
 
-function setLoading(b) { document.getElementById('loading').classList.toggle('hidden', !b); }
-
-function animateCounters() {
-  document.querySelectorAll('.count-up').forEach(el => {
-    const target = parseFloat(el.dataset.target);
-    const isFloat = target % 1 !== 0;
-    const dur = 1400; const start = performance.now();
-    function step(now) {
-      const t = Math.min((now - start) / dur, 1);
-      const ease = 1 - Math.pow(1-t, 3);
-      el.textContent = isFloat ? (target*ease).toFixed(1) : Math.round(target*ease);
-      if (t < 1) requestAnimationFrame(step);
+function updatePhotoCarousel() {
+    const slidesContainer = document.getElementById('photo-slides');
+    if (slidesContainer) {
+        slidesContainer.style.transform = `translateX(-${currentPhotoIdx * 100}%)`;
     }
-    requestAnimationFrame(step);
+    const dots = document.querySelectorAll('#photo-dots .p-dot');
+    dots.forEach((dot, idx) => {
+        if (idx === currentPhotoIdx) {
+            dot.classList.add('active');
+        } else {
+            dot.classList.remove('active');
+        }
+    });
+}
+
+/* ══════════════════════════════════════
+   BASE DE DATOS EN MEMORIA (FALLBACK)
+══════════════════════════════════════ */
+const alternativeBrands = [
+  { name: "Nisolo", cat: "moda", tagline: "Zapatos y accesorios éticos", desc: "Producción 100% verificada con salarios dignos y compensación total de carbono.", stars: 5, tags: ["B-Corp", "Salario Justo"] },
+  { name: "Patagonia", cat: "moda", tagline: "Ropa técnica de exterior", desc: "Pioneros en reparación gratuita vitalicia y uso exclusivo de poliéster orgánico/reciclado.", stars: 5, tags: ["Eco-friendly", "Circular"] },
+  { name: "Fairphone", cat: "tecnologia", tagline: "Smartphones modulares", desc: "Teléfonos diseñados para ser reparados en casa por el usuario. Minerales libres de conflicto.", stars: 4, tags: ["Modular", "Comercio Justo"] },
+  { name: "Back Market", cat: "tecnologia", tagline: "Electrónica reacondicionada", desc: "Marketplace líder que evita toneladas de basura tecnológica certificando dispositivos usados.", stars: 4, tags: ["Reacondicionado"] },
+  { name: "EcoRoots", cat: "hogar", tagline: "Higiene y limpieza residuo cero", desc: "Alternativas plásticas para el baño y la cocina en empaques totalmente compostables.", stars: 5, tags: ["Zero Waste", "Vegano"] }
+];
+
+const quizQuestions = [
+  { id: 1, cat: "Sesgos Cognitivos", q: "Ves un producto con la etiqueta '¡Últimas 2 unidades disponibles a este precio!'. ¿Qué experimentas?", o: [
+    { text: "Ansiedad inmediata y prisa por pagar antes de perder la oportunidad.", val: 10 },
+    { text: "Sospecha de que es un truco de marketing, pero igual considero comprarlo rápido.", val: 30 },
+    { text: "Ignoro la advertencia. Analizo si lo requería antes de entrar a la página.", val: 100 }
+  ]},
+  { id: 2, cat: "Hábitos Digitales", q: "Estás aburrido o estresado por las tareas/trabajo por la noche y abres una app de compras. ¿Con qué frecuencia ocurre?", o: [
+    { text: "Casi todas las noches; comprar me relaja e ilusiona.", val: 10 },
+    { text: "Ocasionalmente, añado cosas al carrito pero intento no pagar de inmediato.", val: 50 },
+    { text: "Rara vez o nunca utilizo las tiendas en línea como método de distracción.", val: 100 }
+  ]},
+  { id: 3, cat: "Post-Compra", q: "Luego de recibir un paquete que compraste por impulso hace unos días, el sentimiento predominante es:", o: [
+    { text: "Cierto desinterés o culpa; el objeto ya no me parece tan emocionante.", val: 20 },
+    { text: "Satisfacción estándar, aunque reconozco que podía pasar sin él.", val: 60 },
+    { text: "Utilidad real y duradera; planifiqué bien su integración en mi vida.", val: 100 }
+  ]},
+  { id: 4, cat: "Finanzas Personales", q: "¿Qué porcentaje de tus ingresos mensuales destinas a compras no esenciales o caprichos espontáneos?", o: [
+    { text: "Más del 30%. Me cuesta ahorrar debido a fugas hormiga.", val: 20 },
+    { text: "Entre el 10% y el 25%. Tengo cierto control pero me desvío.", val: 60 },
+    { text: "Menos del 10%. Priorizo el ahorro y gastos fundamentales.", val: 100 }
+  ]},
+  { id: 5, cat: "Ciclo de Vida", q: "Al adquirir vestimenta o aparatos, ¿cuánto piensas en dónde terminarán cuando dejes de usarlos?", o: [
+    { text: "Nunca lo pienso. Asumo que reciclar o tirarlo a la basura soluciona el problema.", val: 20 },
+    { text: "Lo pienso si el producto es costoso, pero prima el precio y la estética del momento.", val: 50 },
+    { text: "Es crucial. Busco durabilidad, reparabilidad y marcas con logística inversa.", val: 100 }
+  ]}
+];
+let quizAnswers = {};
+let quizCurrentIdx = 0;
+let quizHistory = [];
+
+/* ══════════════════════════════════════
+   SISTEMA DE TOASTS
+══════════════════════════════════════ */
+function toast(title, msg, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type === 'error' ? 'error' : ''}`;
+  t.innerHTML = `
+    <div class="toast-icon">${type === 'error' ? '🚨' : '✨'}</div>
+    <div><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>
+  `;
+  container.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 4000);
+}
+
+/* ══════════════════════════════════════
+   ENRUTADOR INTERNO (VIEWS)
+══════════════════════════════════════ */
+function showView(viewId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const target = document.getElementById(`view-${viewId}`);
+  if (target) target.classList.add('active');
+
+  document.querySelectorAll('.nav-link').forEach(link => {
+    if (link.dataset.view === viewId) link.classList.add('active');
+    else link.classList.remove('active');
   });
+  window.scrollTo(0,0);
 }
 
-async function initAuth() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session?.user) { setUser(session.user); showView('dashboard'); }
-  else showView('login');
-  setLoading(false);
-  document.getElementById('loading').classList.add('hidden');
+function showAuthView(type) {
+  document.getElementById('view-login').classList.remove('active');
+  document.getElementById('view-register').classList.remove('active');
+  document.getElementById(`view-${type}`).classList.add('active');
 }
 
-function setUser(user) {
+/* ══════════════════════════════════════
+   AUTENTICACIÓN & BYPASS
+══════════════════════════════════════ */
+function initSession(user) {
   currentUser = user;
-  const name = user?.user_metadata?.nombre || user?.email?.split('@')[0] || 'Participante';
-  document.getElementById('nav-username').textContent = name;
-  document.getElementById('nav-avatar').textContent = name.charAt(0).toUpperCase();
-  const h = new Date().getHours();
-  const time = h<12?'Buenos días ☀️':h<18?'Buenas tardes 🌤️':'Buenas noches 🌙';
-  const word = h<12?'Buenos días':h<18?'Buenas tardes':'Buenas noches';
-  document.getElementById('dash-time-label').textContent = time;
-  document.getElementById('dash-greeting').textContent = `${word}, ${name.split(' ')[0]}`;
+  document.getElementById('loading').classList.add('hidden');
+  document.getElementById('view-login').classList.remove('active');
+  document.getElementById('view-register').classList.remove('active');
+  document.getElementById('main-nav').style.display = 'flex';
+  
+  const label = user.user_metadata?.full_name || user.email.split('@')[0];
+  document.getElementById('nav-user-name').textContent = label;
+  document.getElementById('dash-user-name').textContent = label;
+  document.getElementById('nav-avatar').textContent = label.charAt(0).toUpperCase();
+
+  syncDashboardData();
+  showView('dashboard');
+  toast("Sesión iniciada", `Bienvenido de vuelta, ${label}.`);
 }
 
-document.getElementById('btn-login').addEventListener('click', async () => {
-  const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-password').value;
-  if (!email || !pass) { toast('Campos incompletos','Completa todos los campos.',true); return; }
-  document.getElementById('btn-login').textContent = 'Cargando…';
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-  document.getElementById('btn-login').textContent = 'Iniciar Sesión →';
-  if (error) { toast('Error de acceso', error.message, true); return; }
-  setUser(data.user); showView('dashboard'); toast('¡Bienvenido de vuelta!');
-});
+function bypassAuth() {
+  initSession({ email: 'estudiante.tesis@universidad.edu', user_metadata: { full_name: 'Investigador MindBuy' } });
+}
 
-document.getElementById('btn-go-register').addEventListener('click', () => showView('register'));
+function logout() {
+  currentUser = null;
+  document.getElementById('main-nav').style.display = 'none';
+  showAuthView('login');
+  toast("Sesión finalizada", "Has salido del sistema de manera segura.");
+}
 
-document.getElementById('btn-register').addEventListener('click', async () => {
-  const name = document.getElementById('reg-name').value.trim();
-  const occ  = document.getElementById('reg-occupation').value;
-  const email= document.getElementById('reg-email').value.trim();
-  const pass = document.getElementById('reg-password').value;
-  if (!name||!occ||!email||!pass) { toast('Campos incompletos','Llena todos los campos.',true); return; }
-  if (pass.length < 8) { toast('Contraseña corta','Mínimo 8 caracteres.',true); return; }
-  document.getElementById('btn-register').textContent = 'Registrando…';
-  const { data, error } = await sb.auth.signUp({ email, password: pass, options: { data: { nombre: name, ocupacion: occ } } });
-  document.getElementById('btn-register').textContent = 'Crear mi cuenta →';
-  if (error) { toast('Error', error.message, true); return; }
-  setUser(data.user ?? { id:'tmp', email, user_metadata:{ nombre: name } });
-  showView('dashboard'); toast('¡Cuenta creada!', 'Bienvenido/a a MindBuy 🌿');
-});
+// Escuchas de formularios de acceso
+document.getElementById('login-form').addEventListener('submit', e => { e.preventDefault(); bypassAuth(); });
+document.getElementById('register-form').addEventListener('submit', e => { e.preventDefault(); bypassAuth(); });
 
-document.getElementById('btn-logout').addEventListener('click', async () => {
-  await sb.auth.signOut(); currentUser = null; showView('login');
-});
+/* ══════════════════════════════════════
+   LOGICA DEL DASHBOARD
+══════════════════════════════════════ */
+function syncDashboardData() {
+  const saved = purchases.filter(p => p.type === 'impulsiva').reduce((acc, curr) => acc + curr.amount, 0);
+  document.getElementById('stat-saved').textContent = saved.toLocaleString();
+  document.getElementById('stat-index').innerHTML = currentProfile.score > 0 ? `${currentProfile.score}<sub>/100</sub>` : `--<sub>/100</sub>`;
+  document.getElementById('stat-profile-name').textContent = currentProfile.class;
+  document.getElementById('stat-goals').textContent = `${goals.filter(g => g.status === 'done').length}/${goals.length}`;
+  document.getElementById('stat-impúlses').textContent = purchases.filter(p => p.type === 'impulsiva').length;
+}
 
-document.getElementById('btn-dev-bypass').addEventListener('click', () => {
-  setUser({ id:'dev-001', email:'dev@mindbuy.com', user_metadata:{ nombre:'Desarrollador Demo' } });
-  showView('dashboard'); toast('Modo desarrollo', 'Sesión de prueba activa.');
-});
+// Deslizador de Datos Clave
+function renderFactSlider() {
+  const wrapper = document.getElementById('fact-slides-inner');
+  const dotsContainer = document.getElementById('fact-slider-dots');
+  
+  wrapper.innerHTML = facts.map(f => `
+    <div class="fact-slide">
+      <div class="fact-number">${f.n}</div>
+      <p class="fact-text">"${f.t}"</p>
+      <div class="fact-source">— Fuente: ${f.s}</div>
+    </div>
+  `).join('');
 
-document.querySelectorAll('.nav-link').forEach(l => {
-  l.addEventListener('click', () => {
-    const v = l.dataset.view;
-    if (v === 'quiz') { showView('quiz'); initQuiz(); } else showView(v);
+  dotsContainer.innerHTML = facts.map((_, i) => `<div class="fact-dot ${i===0?'active':''}" onclick="gotoFact(${i})"></div>`).join('');
+}
+
+function moveFact(dir) {
+  currentFactIdx += dir;
+  if(currentFactIdx >= facts.length) currentFactIdx = 0;
+  if(currentFactIdx < 0) currentFactIdx = facts.length - 1;
+  updateFactPosition();
+}
+
+function gotoFact(idx) { currentFactIdx = idx; updateFactPosition(); }
+
+function updateFactPosition() {
+  document.getElementById('fact-slides-inner').style.transform = `translateX(-${currentFactIdx * 100}%)`;
+  document.querySelectorAll('#fact-slider-dots .fact-dot').forEach((dot, i) => {
+    if(i === currentFactIdx) dot.classList.add('active');
+    else dot.classList.remove('active');
   });
+}
+
+/* ══════════════════════════════════════
+   LOGICA DEL RASTREADOR (TRACKER)
+══════════════════════════════════════ */
+document.getElementById('tracker-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const nameInput = document.getElementById('track-name');
+  const amountInput = document.getElementById('track-amount');
+  const typeInput = document.getElementById('track-type');
+
+  const p = {
+    id: Date.now(),
+    name: nameInput.value,
+    amount: parseFloat(amountInput.value),
+    type: typeInput.value,
+    date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+  };
+
+  purchases.unshift(p);
+  nameInput.value = ''; amountInput.value = '';
+  
+  renderTracker();
+  syncDashboardData();
+  toast("Ítem registrado", `${p.name} fue añadido a la bitácora.`);
 });
 
-function buildFactDots() {
-  const d = document.getElementById('fact-dots'); d.innerHTML = '';
-  for (let i=0; i<FACT_COUNT; i++) {
-    const dot = document.createElement('div');
-    dot.className = 'fact-dot' + (i===0?' active':'');
-    dot.addEventListener('click', () => goFact(i));
-    d.appendChild(dot);
+function deletePurchase(id) {
+  purchases = purchases.filter(p => p.id !== id);
+  renderTracker();
+  syncDashboardData();
+}
+
+function renderTracker() {
+  const list = document.getElementById('purchase-list');
+  const totalReg = purchases.length;
+  const saved = purchases.filter(p => p.type === 'impulsiva').reduce((acc, curr) => acc + curr.amount, 0);
+  const totalImpulsive = purchases.filter(p => p.type === 'impulsiva').length;
+  const rate = totalReg > 0 ? Math.round((totalImpulsive / totalReg) * 100) : 0;
+
+  document.getElementById('ts-total-registered').textContent = totalReg;
+  document.getElementById('ts-total-saved').textContent = `$${saved.toLocaleString()}`;
+  document.getElementById('ts-total-impulsive').textContent = `${rate}%`;
+
+  if(purchases.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🛒</div><p class="empty-state-title">Bitácora vacía</p><p class="empty-state-sub">Registra tu primer intento de compra para mapear tus patrones financieros.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = purchases.map(p => `
+    <div class="purchase-item type-${p.type}">
+      <div class="pi-icon">${p.type==='impulsiva'?'🛑':'✅'}</div>
+      <div class="pi-info">
+        <div class="pi-name">${p.name}</div>
+        <div class="pi-meta">${p.date} • Decisión: <span style="font-weight:600">${p.type==='impulsiva'?'Impulso Detenido':'Planeado'}</span></div>
+      </div>
+      <div class="pi-amount">$${p.amount.toLocaleString()}</div>
+      <button class="pi-del" onclick="deletePurchase(${p.id})" title="Eliminar record">✕</button>
+    </div>
+  `).join('');
+}
+
+/* ══════════════════════════════════════
+   LOGICA DEL COMPROMISO / METAS
+══════════════════════════════════════ */
+document.getElementById('goal-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const tInput = document.getElementById('goal-title');
+  const tgtInput = document.getElementById('goal-target');
+  const uInput = document.getElementById('goal-unit');
+
+  goals.unshift({
+    id: Date.now(),
+    title: tInput.value,
+    target: tgtInput.value ? parseFloat(tgtInput.value) : null,
+    current: 0,
+    unit: uInput.value || 'unidades',
+    status: 'active'
+  });
+
+  tInput.value = ''; tgtInput.value = ''; uInput.value = '';
+  renderGoals();
+  syncDashboardData();
+  toast("Meta fijada", "Tu nuevo compromiso ambiental ha sido guardado.");
+});
+
+function toggleGoal(id) {
+  const g = goals.find(g => g.id === id);
+  if(g) {
+    g.status = g.status === 'active' ? 'done' : 'active';
+    g.current = g.status === 'done' && g.target ? g.target : 0;
+    renderGoals();
+    syncDashboardData();
   }
 }
-function goFact(n) {
-  factSlide = (n+FACT_COUNT) % FACT_COUNT;
-  document.getElementById('fact-slides').style.transform = `translateX(-${factSlide*100}%)`;
-  document.querySelectorAll('.fact-dot').forEach((d,i) => d.classList.toggle('active', i===factSlide));
-}
-document.getElementById('fact-prev').addEventListener('click', () => goFact(factSlide-1));
-document.getElementById('fact-next').addEventListener('click', () => goFact(factSlide+1));
-setInterval(() => goFact(factSlide+1), 5500);
 
-function initQuiz() { currentQuestion=0; quizAnswers={}; renderQuestion(); }
+function renderGoals() {
+  const container = document.getElementById('goals-list');
+  if(goals.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🎯</div><p class="empty-state-title">Sin metas vigentes</p></div>`;
+    return;
+  }
+  container.innerHTML = goals.map(g => {
+    const hasProgress = g.target !== null;
+    const pct = hasProgress ? Math.min(Math.round((g.current / g.target) * 100), 100) : 0;
+    return `
+      <div class="goal-card">
+        <div class="goal-header">
+          <div>
+            <div class="goal-title">${g.title}</div>
+            ${hasProgress ? `<div class="goal-desc mt-2">Progreso: ${g.current} de ${g.target} ${g.unit}</div>` : ''}
+          </div>
+          <button class="btn ${g.status==='done'?'btn-amber':'btn-outline'} btn-sm" onclick="toggleGoal(${g.id})">
+            ${g.status==='done'?'✓ Cumplido':'Marcar Logrado'}
+          </button>
+        </div>
+        ${hasProgress ? `
+          <div class="goal-footer">
+            <div class="progress" style="flex:1"><div class="progress-fill" style="width: ${pct}%"></div></div>
+            <span class="goal-pct">${pct}%</span>
+          </div>
+        `: ''}
+      </div>
+    `;
+  }).join('');
+}
+
+/* ══════════════════════════════════════
+   LOGICA DEL QUIZ PSICOMÉTRICO
+══════════════════════════════════════ */
+function initQuiz() {
+  quizCurrentIdx = 0;
+  quizAnswers = {};
+  renderQuestion();
+}
 
 function renderQuestion() {
-  const q = questions[currentQuestion], total = questions.length;
-  document.getElementById('quiz-step').textContent = `Pregunta ${currentQuestion+1} de ${total}`;
-  document.getElementById('quiz-progress').style.width = `${Math.round((currentQuestion/total)*100)+8}%`;
-  document.getElementById('quiz-prev').style.visibility = currentQuestion>0?'visible':'hidden';
-  document.getElementById('quiz-next').textContent = currentQuestion===total-1?'Ver resultados →':'Siguiente →';
-  document.getElementById('quiz-question-container').innerHTML = `
+  const q = quizQuestions[quizCurrentIdx];
+  const container = document.getElementById('quiz-card-container');
+  
+  document.getElementById('quiz-progress-text').textContent = `Pregunta ${quizCurrentIdx + 1} de ${quizQuestions.length}`;
+  document.getElementById('quiz-category-badge').textContent = q.cat;
+  document.getElementById('quiz-progress-bar').style.width = `${((quizCurrentIdx + 1) / quizQuestions.length) * 100}%`;
+
+  document.getElementById('quiz-prev-btn').style.visibility = quizCurrentIdx === 0 ? 'hidden' : 'visible';
+  document.getElementById('quiz-next-btn').textContent = quizCurrentIdx === quizQuestions.length - 1 ? 'Finalizar Evaluación' : 'Siguiente →';
+
+  container.innerHTML = `
     <div class="question-card">
-      <p class="q-category">${q.cat}</p>
-      <h2 class="q-text">${q.text}</h2>
+      <div class="q-category">${q.cat}</div>
+      <h2 class="q-text">${q.q}</h2>
       <div class="options-grid">
-        ${q.opts.map((opt,i) => `
-          <button class="option-btn ${quizAnswers[q.id]===String(i)?'selected':''}"
-            onclick="selectOption('${q.id}',${i},this)">
-            <div class="option-radio"></div><span>${opt}</span>
-          </button>`).join('')}
+        ${q.o.map((o, idx) => {
+          const isSelected = quizAnswers[q.id] === idx;
+          return `
+            <div class="option-btn ${isSelected?'selected':''}" onclick="selectOption(${q.id}, ${idx})">
+              <div class="option-radio"></div>
+              <span>${o.text}</span>
+            </div>
+          `;
+        }).join('')}
       </div>
-    </div>`;
+    </div>
+  `;
 }
 
-function selectOption(qid, idx, btn) {
-  quizAnswers[qid] = String(idx);
-  btn.closest('.options-grid').querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
+function selectOption(qId, oIdx) {
+  quizAnswers[qId] = oIdx;
+  renderQuestion();
+}
+
+function quizPrev() {
+  if(quizCurrentIdx > 0) { quizCurrentIdx--; renderQuestion(); }
 }
 
 function quizNext() {
-  if (quizAnswers[questions[currentQuestion].id]===undefined) { toast('Selecciona una opción','',true); return; }
-  if (currentQuestion < questions.length-1) { currentQuestion++; renderQuestion(); } else showResults();
+  const currentQ = quizQuestions[quizCurrentIdx];
+  if(quizAnswers[currentQ.id] === undefined) {
+    toast("Selecciona una opción", "Debes escoger una respuesta para continuar.", "error");
+    return;
+  }
+
+  if(quizCurrentIdx < quizQuestions.length - 1) {
+    quizCurrentIdx++;
+    renderQuestion();
+  } else {
+    calculateQuizResults();
+  }
 }
-function quizPrev() { if (currentQuestion>0) { currentQuestion--; renderQuestion(); } }
 
-function showResults() {
-  const catScores = {};
-  questions.forEach(q => {
-    const s = scores[parseInt(quizAnswers[q.id]??3)];
-    if (!catScores[q.cat]) catScores[q.cat] = [];
-    catScores[q.cat].push(s);
+function calculateQuizResults() {
+  let totalScore = 0;
+  quizQuestions.forEach(q => {
+    const selectedIdx = quizAnswers[q.id];
+    totalScore += q.o[selectedIdx].val;
   });
-  const catAvg = {};
-  Object.entries(catScores).forEach(([cat,vals]) => { catAvg[cat] = Math.round((vals.reduce((a,b)=>a+b,0)/vals.length)*33.3); });
-  const total = Math.round(Object.values(catAvg).reduce((a,b)=>a+b,0)/Object.keys(catAvg).length);
+  const avgScore = Math.round(totalScore / quizQuestions.length);
 
-  let title, desc;
-  if (total>=80)      { title='Consumidor Consciente 🌿'; desc='Tienes un perfil ejemplar de consumo responsable. Tu conciencia sobre el impacto de tus compras es notablemente alta.'; }
-  else if (total>=60) { title='Consumidor en Transición 🌱'; desc='Tienes buenos instintos y ya practicas varios hábitos sostenibles. Estás muy cerca de alcanzar un perfil de consumo consciente pleno.'; }
-  else if (total>=40) { title='Consumidor en Aprendizaje 🌿'; desc='Tienes conciencia del problema pero aún hay patrones que vale la pena revisar. ¡MindBuy está aquí para guiarte!'; }
-  else                { title='Consumidor Impulsivo 🔴'; desc='Tu perfil muestra un consumo mayormente reactivo. No te preocupes: reconocerlo es el primer paso hacia el cambio real.'; }
+  let title = "Consumidor Impulsivo / Reactivo";
+  let desc = "Tus decisiones en la web están altamente mediadas por los disparadores de dopamina y las urgencias artificiales de las tiendas. MindBuy te servirá para estructurar cortafuegos cognitivos.";
+  if(avgScore >= 40 && avgScore < 75) {
+    title = "Consumidor En Transición Consciente";
+    desc = "Reconoces las trampas del marketing y posees intenciones claras de sostenibilidad, pero flaqueas en momentos de estrés o fatiga decisoria.";
+  } else if(avgScore >= 75) {
+    title = "Consumidor Deliberado / Minimalista";
+    desc = "Felicidades. Posees un alto blindaje frente al hiperconsumo. Compras por utilidad estricta y evalúas el impacto ecológico antes del checkout.";
+  }
 
-  document.getElementById('result-score').textContent = total;
-  document.getElementById('result-title').textContent = title;
-  document.getElementById('result-desc').textContent = desc;
+  currentProfile = { score: avgScore, title: title, class: title.split(' ')[1] || title };
+  
+  quizHistory.unshift({
+    id: Date.now(),
+    score: avgScore,
+    title: title,
+    date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  });
 
-  document.getElementById('result-bars').innerHTML = Object.entries(catAvg).map(([cat,pct]) => `
+  // Renderizar Vista de Resultados
+  document.getElementById('res-score').textContent = avgScore;
+  document.getElementById('res-title').textContent = title;
+  document.getElementById('res-desc').textContent = desc;
+
+  // Renderizar desglose simulado de dimensiones
+  const dims = [
+    { name: "Resistencia a Patrones Oscuros", v: quizAnswers[1]===2?100:(quizAnswers[1]===1?40:10) },
+    { name: "Control Emocional de Impulsos", v: quizAnswers[2]===2?100:(quizAnswers[2]===1?50:10) },
+    { name: "Planificación Financiera", v: quizAnswers[4]===2?100:(quizAnswers[4]===1?60:20) }
+  ];
+  
+  document.getElementById('res-breakdown').innerHTML = dims.map(d => `
     <div class="result-bar-item">
-      <div class="result-bar-label"><span>${cat}</span><span>${pct}%</span></div>
-      <div class="result-bar-track"><div class="result-bar-fill" style="width:0%" data-pct="${pct}"></div></div>
-    </div>`).join('');
-
-  document.getElementById('result-strengths').innerHTML = Object.entries(catAvg).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([cat,pct]) => `
-    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--stone)">
-      <div style="width:32px;height:32px;border-radius:8px;background:var(--sage-pale);display:flex;align-items:center;justify-content:center">🏆</div>
-      <div><p style="font-weight:600;font-size:.86rem">${cat}</p><p style="font-size:.76rem;color:var(--ink3)">${pct}% de consciencia</p></div>
-    </div>`).join('');
-
-  document.getElementById('result-steps').innerHTML = [
-    { icon:'🛍️', text:'Antes de comprar, espera 48 horas para evitar compras impulsivas.' },
-    { icon:'♻️', text:'Explora ThredUp o Vinted antes de comprar nuevo.' },
-    { icon:'📊', text:'Registra tus gastos mensuales de compras online en el tracker.' },
-    { icon:'🌿', text:'Conoce 3 marcas sostenibles en tu categoría favorita.' },
-  ].map(s => `
-    <div style="display:flex;align-items:flex-start;gap:12px">
-      <div style="width:34px;height:34px;border-radius:8px;background:var(--stone2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">${s.icon}</div>
-      <p style="font-size:.87rem;color:var(--ink2);line-height:1.65;padding-top:6px">${s.text}</p>
-    </div>`).join('');
+      <div class="result-bar-label"><span>${d.name}</span><span>${d.v}%</span></div>
+      <div class="result-bar-track"><div class="result-bar-fill" style="width:0%"></div></div>
+    </div>
+  `).join('');
 
   showView('results');
-  setTimeout(() => { document.querySelectorAll('.result-bar-fill').forEach(el => { el.style.width = el.dataset.pct+'%'; }); }, 200);
+  syncDashboardData();
 
-  quizHistory.unshift({ score:total, title, date: new Date().toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'}) });
-
-  if (currentUser?.id && currentUser.id!=='dev-001') {
-    sb.from('respuestas').insert({ user_id:currentUser.id, score:total, perfil:title, respuestas:quizAnswers, created_at:new Date().toISOString() })
-      .then(({error}) => { if(error) console.warn('Save error:',error); });
-  }
+  // Animación retrasada de las barras
+  setTimeout(() => {
+    document.querySelectorAll('.result-bar-fill').forEach((bar, i) => {
+      bar.style.width = `${dims[i].v}%`;
+    });
+  }, 150);
 }
 
-document.getElementById('btn-add-purchase').addEventListener('click', () => {
-  const product = document.getElementById('tr-product').value.trim();
-  const amount  = parseFloat(document.getElementById('tr-amount').value);
-  const type    = document.getElementById('tr-type').value;
-  if (!product||!amount||amount<=0) { toast('Datos incompletos','Completa producto y monto.',true); return; }
-  purchases.unshift({ id:Date.now(), product, amount, type, date: new Date().toLocaleDateString('es-CO',{month:'short',day:'numeric'}) });
-  renderPurchases();
-  document.getElementById('tr-product').value = '';
-  document.getElementById('tr-amount').value  = '';
-  toast('Compra registrada', `${product} — $${amount.toLocaleString('es-CO')}`);
-  if (currentUser?.id && currentUser.id!=='dev-001') {
-    sb.from('compras').insert({ user_id:currentUser.id, producto:product, monto:amount, tipo:type, created_at:new Date().toISOString() })
-      .then(({error}) => { if(error) console.warn(error); });
-  }
-});
+/* ══════════════════════════════════════
+   LOGICA DEL DIRECTORIO / GUÍA
+══════════════════════════════════════ */
+function renderBrands(filter = 'todas') {
+  const container = document.getElementById('brands-grid');
+  const filtered = filter === 'todas' ? alternativeBrands : alternativeBrands.filter(b => b.cat === filter);
 
-function renderPurchases() {
-  const list = document.getElementById('purchase-list');
-  list.innerHTML = purchases.length===0
-    ? `<div class="empty-state"><div class="empty-state-icon">🛒</div><p class="empty-state-title">Aún no hay compras registradas</p><p class="empty-state-sub">Registra tu primera compra arriba.</p></div>`
-    : purchases.map(p => `
-      <div class="purchase-item type-${p.type}">
-        <div class="pi-icon">${p.type==='impulsiva'?'⚡':p.type==='necesaria'?'✅':'📋'}</div>
-        <div class="pi-info"><p class="pi-name">${p.product}</p><p class="pi-meta">${p.date} · <span class="badge badge-${p.type==='impulsiva'?'amber':'sage'}">${p.type}</span></p></div>
-        <div class="pi-amount">$${p.amount.toLocaleString('es-CO')}</div>
-        <button class="pi-del" onclick="deletePurchase(${p.id})">✕</button>
-      </div>`).join('');
-  const total = purchases.reduce((a,b)=>a+b.amount,0);
-  document.getElementById('ts-total').textContent     = `$${total.toLocaleString('es-CO')}`;
-  document.getElementById('ts-impulsiva').textContent = purchases.filter(p=>p.type==='impulsiva').length;
-  document.getElementById('ts-count').textContent     = purchases.length;
-}
-
-function deletePurchase(id) { purchases = purchases.filter(p=>p.id!==id); renderPurchases(); }
-
-document.getElementById('btn-add-goal').addEventListener('click', () => {
-  const title    = document.getElementById('goal-title').value.trim();
-  const category = document.getElementById('goal-category').value;
-  const desc     = document.getElementById('goal-desc').value.trim();
-  if (!title) { toast('Falta el título','',true); return; }
-  const id = 'g'+Date.now();
-  const card = document.createElement('div');
-  card.className = 'goal-card'; card.dataset.id = id;
-  card.innerHTML = `
-    <div class="goal-header"><div><p class="goal-title">${getCatEmoji(category)} ${title}</p><p class="goal-desc">${desc||'Sin descripción adicional.'}</p></div><span class="goal-status status-active">Activa</span></div>
-    <div class="progress"><div class="progress-fill" style="width:0%"></div></div>
-    <div class="goal-footer"><span class="goal-pct">0% completado</span><button class="btn btn-sm btn-outline" onclick="toggleGoal(this,'${id}')">Marcar como lograda</button></div>`;
-  document.getElementById('goals-list').prepend(card);
-  document.getElementById('goal-title').value = '';
-  document.getElementById('goal-desc').value  = '';
-  toast('Meta creada', title);
-  if (currentUser?.id && currentUser.id!=='dev-001') {
-    sb.from('metas').insert({ user_id:currentUser.id, titulo:title, descripcion:desc, categoria:category, progreso:0, created_at:new Date().toISOString() })
-      .then(({error}) => { if(error) console.warn(error); });
-  }
-});
-
-function getCatEmoji(cat) { return {consumo:'🛍️',presupuesto:'💰',sostenibilidad:'🌿',habitos:'🧠'}[cat]||'🎯'; }
-
-function toggleGoal(btn, id) {
-  const card = document.querySelector(`.goal-card[data-id="${id}"]`);
-  if (!card) return;
-  const fill=card.querySelector('.progress-fill'), pctEl=card.querySelector('.goal-pct'), status=card.querySelector('.goal-status');
-  if (fill.style.width==='100%') {
-    fill.style.width='0%'; pctEl.textContent='0% completado';
-    status.className='goal-status status-active'; status.textContent='Activa'; btn.textContent='Marcar como lograda';
-  } else {
-    fill.style.width='100%'; pctEl.textContent='100% — ¡Lograda! 🎉';
-    status.className='goal-status status-done'; status.textContent='✓ Lograda'; btn.textContent='Reactivar';
-    toast('¡Meta lograda! 🎉','Excelente trabajo.');
-  }
-}
-
-function renderBrands(cat) {
-  const filtered = cat==='all' ? brands : brands.filter(b=>b.cat===cat);
-  document.getElementById('brands-grid').innerHTML = filtered.map(b => `
+  container.innerHTML = filtered.map(b => `
     <div class="brand-card">
-      <div class="brand-card-top"><div class="brand-icon">${b.icon}</div><div><p class="brand-name">${b.name}</p><p class="brand-tagline">${b.tagline}</p></div></div>
+      <div class="brand-card-top">
+        <div class="brand-icon">${b.cat==='moda'?'👕':(b.cat==='tecnologia'?'🔌':'🏡')}</div>
+        <div><h4 class="brand-name">${b.name}</h4><div class="brand-tagline">${b.tagline}</div></div>
+      </div>
       <div class="brand-card-body">
         <p class="brand-desc">${b.desc}</p>
-        <div class="brand-badges">${b.badges.map(bg=>`<span class="badge badge-sage">${bg}</span>`).join('')}</div>
+        <div class="brand-badges">${b.tags.map(t=>`<span class="badge badge-sage">${t}</span>`).join('')}</div>
         <div class="brand-score"><span class="brand-stars">${'★'.repeat(b.stars)}${'☆'.repeat(5-b.stars)}</span><span class="brand-score-label">Índice sostenibilidad</span></div>
       </div>
     </div>`).join('');
@@ -1079,19 +1311,46 @@ document.getElementById('guide-tabs').addEventListener('click', e => {
   btn.classList.add('active'); renderBrands(btn.dataset.cat);
 });
 
+/* ══════════════════════════════════════
+   LOGICA DEL HISTORIAL
+══════════════════════════════════════ */
 function renderHistory() {
   const list = document.getElementById('history-list');
   list.innerHTML = quizHistory.length===0
-    ? `<div class="empty-state"><div class="empty-state-icon">📊</div><p class="empty-state-title">Aún no tienes evaluaciones</p><p class="empty-state-sub">Completa el quiz por primera vez para ver tu historial aquí.</p><button class="btn btn-primary mt-6" onclick="showView('quiz');initQuiz()">Hacer mi primera evaluación →</button></div>`
+    ? `<div class=\"empty-state\"><div class=\"empty-state-icon\">📊</div><p class=\"empty-state-title\">Aún no tienes evaluaciones</p><p class=\"empty-state-sub\">Completa el quiz por primera vez para ver tu historial aquí.</p><button class=\"btn btn-primary mt-6\" onclick=\"showView('quiz');initQuiz()\">Hacer mi primera evaluación →</button></div>`
     : quizHistory.map(entry => `
       <div class="history-item">
         <div class="history-score-badge"><span class="hs-num">${entry.score}</span></div>
         <div class="hi-info"><p class="hi-title">${entry.title}</p><p class="hi-date">${entry.date}</p></div>
-        <span class="hi-retake" onclick="showView('quiz');initQuiz()">Repetir →</span>
-      </div>`).join('');
+        <div class="hi-retake" onclick="showView('quiz');initQuiz()">Re-evaluar</div>
+      </div>
+    `).join('');
 }
 
-window.addEventListener('DOMContentLoaded', () => { buildFactDots(); initAuth(); });
+/* ══════════════════════════════════════
+   SISTEMA DE EVENTOS GLOBALES Y INICIO
+══════════════════════════════════════ */
+document.querySelectorAll('.nav-links .nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    const v = link.dataset.view;
+    if (v === 'guide') renderBrands('todas');
+    if (v === 'history') renderHistory();
+    showView(v);
+  });
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  renderFactSlider();
+  renderTracker();
+  renderGoals();
+  updatePhotoCarousel(); // Inicializar el carrusel de fotos
+  
+  // Simular carga de la Red Supabase / Netlify
+  setTimeout(() => {
+    document.getElementById('loading').classList.add('hidden');
+    showAuthView('login');
+  }, 1000);
+});
 </script>
 </body>
 </html>
