@@ -3,8 +3,8 @@
    ══════════════════════════════════════ */
 @font-face {
   font-family: 'Joshico';
-  src: url('Joshico-Regular.ttf') format('truetype'),
-       url('Joshico-Regular.otf') format('opentype');
+  src: url('joshico-regular-font.zip') format('truetype'),
+       url('joshico-regular-font.zip') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
