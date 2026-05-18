@@ -7,461 +7,1091 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet" />
-  
-  <link rel="stylesheet" href="style.css" />
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* ══════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════ */
+    :root {
+      --sage:       #4e7c5f;
+      --sage-dark:  #2d5240;
+      --sage-light: #7aaa8a;
+      --sage-pale:  #e8f2ec;
+      --sage-ghost: #f2f8f4;
+      --amber:      #c68b3e;
+      --amber-pale: #fdf3e3;
+      --stone:      #f7f4ef;
+      --stone2:     #ede8e0;
+      --stone3:     #d4cec4;
+      --ink:        #1a1f1c;
+      --ink2:       #3d4840;
+      --ink3:       #7a857e;
+      --white:      #ffffff;
+      --red:        #c0392b;
+
+      --shadow-xs: 0 1px 3px rgba(45,82,64,.06);
+      --shadow-sm: 0 4px 16px rgba(45,82,64,.08);
+      --shadow-md: 0 8px 32px rgba(45,82,64,.12);
+      --shadow-lg: 0 16px 56px rgba(45,82,64,.16);
+
+      --radius-sm: 10px;
+      --radius:    16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-serif:   'Fraunces', Georgia, serif;
+      --font-sans:    'Plus Jakarta Sans', sans-serif;
+
+      --ease: cubic-bezier(.4,0,.2,1);
+      --t: .28s;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--stone);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { display: block; max-width: 100%; }
+    button { cursor: pointer; font-family: inherit; border: none; background: none; }
+    input, select, textarea { font-family: inherit; }
+    a { color: inherit; text-decoration: none; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--stone2); }
+    ::-webkit-scrollbar-thumb { background: var(--sage-light); border-radius: 3px; }
+
+    .view { display: none; min-height: 100vh; }
+    .view.active { display: block; animation: fadeUp .38s var(--ease) both; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+
+    #loading {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--stone);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 20px;
+      transition: opacity .4s;
+    }
+    #loading.hidden { opacity:0; pointer-events:none; }
+    .load-ring {
+      width: 48px; height: 48px;
+      border: 3px solid var(--stone2);
+      border-top-color: var(--sage);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .load-label { color: var(--ink3); font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; }
+
+    /* ── LOGO: usa la imagen real, nunca SVG inline ── */
+    .logo { display: flex; align-items: center; user-select: none; }
+    .logo img { display: block; object-fit: contain; image-rendering: -webkit-optimize-contrast; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 12px 24px; border-radius: 50px;
+      font-size: .84rem; font-weight: 600;
+      letter-spacing: .04em;
+      transition: all var(--t) var(--ease);
+      position: relative; white-space: nowrap;
+    }
+    .btn-primary { background: var(--sage-dark); color: var(--white); box-shadow: 0 4px 16px rgba(45,82,64,.3); }
+    .btn-primary:hover { background: var(--sage); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,82,64,.35); }
+    .btn-outline { background: transparent; color: var(--sage-dark); border: 1.5px solid var(--sage-dark); }
+    .btn-outline:hover { background: var(--sage-ghost); transform: translateY(-2px); }
+    .btn-ghost { color: var(--ink2); padding: 10px 18px; border-radius: 50px; }
+    .btn-ghost:hover { background: var(--stone2); color: var(--sage-dark); }
+    .btn-amber { background: var(--amber); color: var(--white); box-shadow: 0 4px 16px rgba(198,139,62,.3); }
+    .btn-amber:hover { background: #b07830; transform: translateY(-2px); }
+    .btn-full { width: 100%; }
+    .btn-lg { padding: 15px 32px; font-size: .9rem; }
+    .btn-sm { padding: 8px 18px; font-size: .78rem; }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: .75rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink3); }
+    .field input, .field select, .field textarea {
+      padding: 12px 16px;
+      border: 1.5px solid var(--stone3);
+      border-radius: var(--radius-sm);
+      font-size: .93rem; color: var(--ink);
+      background: var(--white);
+      transition: border var(--t), box-shadow var(--t);
+      outline: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--sage);
+      box-shadow: 0 0 0 3px rgba(78,124,95,.12);
+    }
+    .field input::placeholder { color: var(--ink3); }
+
+    .card { background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
+    .card-body { padding: 24px; }
+    .card-header { padding: 14px 24px; background: var(--sage-dark); color: var(--white); font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 50px; font-size: .7rem; font-weight: 700; letter-spacing: .05em; }
+    .badge-sage { background: var(--sage-pale); color: var(--sage-dark); }
+    .badge-amber { background: var(--amber-pale); color: var(--amber); }
+
+    #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9990; display: flex; flex-direction: column; gap: 8px; }
+    .toast { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow-lg); padding: 14px 20px; min-width: 260px; display: flex; align-items: flex-start; gap: 10px; animation: slideIn .28s var(--ease) both; border-left: 4px solid var(--sage); }
+    .toast.error { border-left-color: var(--red); }
+    .toast-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+    .toast-title { font-weight: 600; font-size: .88rem; }
+    .toast-msg { font-size: .8rem; color: var(--ink3); margin-top: 2px; }
+    @keyframes slideIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:none; } }
+
+    .progress { width: 100%; height: 5px; background: var(--stone2); border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--sage-dark), var(--sage-light)); border-radius: 3px; transition: width .5s var(--ease); }
+
+    /* AUTH */
+    #view-login, #view-register { display: none; background: var(--stone); }
+    #view-login.active, #view-register.active { display: flex; }
+    .auth-layout { width: 100%; min-height: 100vh; display: flex; align-items: stretch; }
+    .auth-panel { flex: 1; display: none; background: var(--sage-dark); position: relative; overflow: hidden; flex-direction: column; justify-content: flex-end; padding: 56px; }
+    @media(min-width:900px){ .auth-panel { display: flex; } }
+    .auth-panel-bg { position: absolute; inset: 0; background: linear-gradient(160deg, var(--sage) 0%, var(--sage-dark) 60%); }
+    .auth-panel-pattern { position: absolute; inset: 0; opacity: .04; background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 32px 32px; }
+    .auth-panel-content { position: relative; z-index: 1; }
+    .auth-panel-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.12); color: rgba(255,255,255,.9); padding: 5px 12px; border-radius: 50px; font-size: .75rem; font-weight: 600; letter-spacing: .06em; margin-bottom: 24px; }
+    .auth-panel-headline { font-family: var(--font-display); font-size: 3rem; font-weight: 400; font-style: italic; color: var(--white); line-height: 1.2; margin-bottom: 20px; }
+    .auth-panel-sub { color: rgba(255,255,255,.6); font-size: .93rem; line-height: 1.75; max-width: 360px; margin-bottom: 36px; }
+    .auth-features { display: flex; flex-direction: column; gap: 14px; }
+    .auth-feature { display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,.8); font-size: .88rem; }
+    .auth-feature-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--sage-light); flex-shrink: 0; }
+    .auth-form-side { width: 100%; max-width: 440px; display: flex; flex-direction: column; justify-content: center; padding: 48px 40px; margin: 0 auto; }
+    .auth-logo-wrap { margin-bottom: 40px; }
+    .auth-form-title { font-family: var(--font-display); font-size: 1.9rem; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+    .auth-form-sub { color: var(--ink3); font-size: .88rem; margin-bottom: 28px; line-height: 1.6; }
+    .form-stack { display: flex; flex-direction: column; gap: 16px; }
+    .form-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+    .form-footer { margin-top: 20px; text-align: center; color: var(--ink3); font-size: .84rem; }
+    .form-footer button { color: var(--sage); font-weight: 700; background: none; border: none; cursor: pointer; }
+    .divider { display: flex; align-items: center; gap: 12px; color: var(--ink3); font-size: .78rem; margin: 4px 0; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--stone2); }
+    .dev-bypass { margin-top: 24px; padding: 12px; border: 1.5px dashed var(--stone3); border-radius: var(--radius-sm); background: transparent; color: var(--ink3); font-size: .78rem; width: 100%; text-align: center; cursor: pointer; transition: all var(--t); }
+    .dev-bypass:hover { border-color: var(--sage-light); color: var(--sage); background: var(--sage-ghost); }
+
+    /* NAVBAR */
+    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(247,244,239,.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--stone2); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+    .nav-links { display: flex; align-items: center; gap: 2px; list-style: none; }
+    .nav-link { padding: 7px 14px; border-radius: 50px; font-size: .82rem; font-weight: 500; color: var(--ink2); cursor: pointer; transition: all var(--t); }
+    .nav-link:hover { color: var(--sage-dark); background: var(--stone2); }
+    .nav-link.active { color: var(--sage-dark); background: var(--sage-pale); font-weight: 600; }
+    .nav-user { display: flex; align-items: center; gap: 10px; }
+    .nav-username { font-size: .82rem; color: var(--ink2); }
+    .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--sage-dark); display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: 700; font-size: .82rem; }
+
+    /* DASHBOARD */
+    #view-dashboard { display: none; background: var(--stone); }
+    #view-dashboard.active { display: block; }
+    .dash-hero { background: var(--sage-dark); padding: 48px 40px 72px; position: relative; overflow: hidden; }
+    .dash-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--sage) 0%, var(--sage-dark) 100%); }
+    .dash-hero::after { content: ''; position: absolute; inset: 0; opacity: .03; background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 28px 28px; }
+    .dash-hero-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+    .dash-eyebrow { display: inline-flex; align-items: center; gap: 6px; color: rgba(255,255,255,.55); font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 12px; }
+    .dash-greeting { font-family: var(--font-display); font-size: 2.6rem; font-weight: 400; font-style: italic; color: var(--white); margin-bottom: 8px; line-height: 1.2; }
+    .dash-sub { color: rgba(255,255,255,.5); font-size: .9rem; }
+
+    .stats-row { max-width: 1100px; margin: -32px auto 0; padding: 0 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+    .stat-card { background: var(--white); border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: 4px; border-top: 3px solid transparent; transition: transform var(--t), box-shadow var(--t); }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .stat-card.c-sage  { border-top-color: var(--sage); }
+    .stat-card.c-amber { border-top-color: var(--amber); }
+    .stat-card.c-teal  { border-top-color: #5a9e9e; }
+    .stat-card.c-rose  { border-top-color: #c07080; }
+    .stat-icon { font-size: 1.5rem; margin-bottom: 6px; }
+    .stat-val { font-family: var(--font-display); font-size: 2rem; font-weight: 500; line-height: 1; color: var(--ink); }
+    .stat-val sup { font-size: .85rem; font-weight: 400; color: var(--ink3); margin-left: 2px; vertical-align: super; }
+    .stat-label { font-size: .76rem; font-weight: 500; color: var(--ink3); letter-spacing: .03em; margin-top: 2px; }
+    .stat-delta { font-size: .73rem; color: var(--sage); font-weight: 600; margin-top: 4px; }
+
+    .dash-grid { max-width: 1100px; margin: 32px auto; padding: 0 32px 64px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media(max-width:800px){ .dash-grid { grid-template-columns: 1fr; } }
+    .dash-span2 { grid-column: span 2; }
+    @media(max-width:800px){ .dash-span2 { grid-column: span 1; } }
+
+    .section-eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--sage); margin-bottom: 6px; }
+    .section-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 500; font-style: italic; color: var(--ink); margin-bottom: 16px; line-height: 1.3; }
+
+    .fact-slider { background: var(--white); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); position: relative; }
+    .fact-slides-wrap { overflow: hidden; }
+    .fact-slides { display: flex; transition: transform .5s var(--ease); }
+    .fact-slide { min-width: 100%; padding: 28px; }
+    .fact-number { font-size: .7rem; font-weight: 700; letter-spacing: .12em; color: var(--sage-light); text-transform: uppercase; margin-bottom: 14px; }
+    .fact-text { font-family: var(--font-serif); font-size: 1.05rem; font-weight: 300; font-style: italic; color: var(--ink); line-height: 1.65; margin-bottom: 12px; }
+    .fact-source { font-size: .76rem; color: var(--ink3); font-weight: 500; }
+    .fact-controls { display: flex; align-items: center; justify-content: space-between; padding: 0 28px 20px; }
+    .fact-dots { display: flex; gap: 6px; }
+    .fact-dot { width: 6px; height: 6px; border-radius: 3px; background: var(--stone2); cursor: pointer; transition: all var(--t); }
+    .fact-dot.active { background: var(--sage); width: 18px; }
+    .fact-arrows { display: flex; gap: 6px; }
+    .fact-arrow { width: 30px; height: 30px; border-radius: 50%; background: var(--stone); display: flex; align-items: center; justify-content: center; font-size: .85rem; cursor: pointer; transition: background var(--t); }
+    .fact-arrow:hover { background: var(--sage-pale); }
+
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .tl-item { display: flex; gap: 16px; }
+    .tl-left { display: flex; flex-direction: column; align-items: center; width: 36px; flex-shrink: 0; }
+    .tl-dot { width: 32px; height: 32px; border-radius: 50%; background: var(--sage-pale); color: var(--sage-dark); font-weight: 700; font-size: .8rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .tl-line { flex: 1; width: 1px; background: var(--stone2); margin: 4px 0; min-height: 24px; }
+    .tl-content { padding-bottom: 24px; padding-top: 5px; }
+    .tl-title { font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
+    .tl-desc { font-size: .83rem; color: var(--ink3); line-height: 1.6; }
+
+    .video-wrap { border-radius: var(--radius); overflow: hidden; aspect-ratio: 16/9; background: var(--ink); }
+    .video-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+
+    .cta-card { background: var(--sage-ghost); border-radius: var(--radius-lg); border: 1.5px solid var(--stone2); padding: 28px; display: flex; align-items: flex-start; gap: 20px; }
+    .cta-icon { font-size: 2.5rem; flex-shrink: 0; line-height: 1; }
+    .cta-card h3 { font-weight: 700; font-size: 1.05rem; margin-bottom: 8px; }
+    .cta-card p { font-size: .85rem; color: var(--ink2); line-height: 1.65; margin-bottom: 18px; }
+    .cta-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .alt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .alt-card { background: var(--white); border-radius: var(--radius); padding: 20px 16px; text-align: center; border: 1.5px solid var(--stone2); cursor: pointer; transition: all var(--t); }
+    .alt-card:hover { border-color: var(--sage); background: var(--sage-ghost); transform: translateY(-3px); box-shadow: var(--shadow-sm); }
+    .alt-card-icon { font-size: 1.8rem; margin-bottom: 8px; }
+    .alt-card-name { font-weight: 600; font-size: .84rem; }
+    .alt-card-cat { font-size: .72rem; color: var(--ink3); margin-top: 3px; }
+
+    /* TRACKER */
+    #view-tracker { display: none; background: var(--stone); }
+    #view-tracker.active { display: block; }
+    .tracker-layout { max-width: 1100px; margin: 0 auto; padding: 36px 32px 80px; }
+    .tracker-form-card { background: var(--white); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-sm); margin-bottom: 28px; }
+    .tracker-form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 14px; align-items: end; margin-top: 20px; }
+    @media(max-width:760px){ .tracker-form-grid { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:480px){ .tracker-form-grid { grid-template-columns: 1fr; } }
+    .purchase-list { display: flex; flex-direction: column; gap: 10px; }
+    .purchase-item { background: var(--white); border-radius: var(--radius); padding: 16px 20px; display: flex; align-items: center; gap: 16px; box-shadow: var(--shadow-xs); border-left: 3px solid transparent; transition: all var(--t); }
+    .purchase-item:hover { box-shadow: var(--shadow-sm); }
+    .purchase-item.type-impulsiva { border-left-color: #c07080; }
+    .purchase-item.type-necesaria { border-left-color: var(--sage); }
+    .purchase-item.type-planeada  { border-left-color: #5a9e9e; }
+    .pi-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .pi-info { flex: 1; }
+    .pi-name { font-weight: 600; font-size: .9rem; }
+    .pi-meta { font-size: .78rem; color: var(--ink3); margin-top: 2px; }
+    .pi-amount { font-family: var(--font-display); font-weight: 500; font-size: 1.1rem; color: var(--ink); }
+    .pi-del { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--ink3); font-size: .9rem; flex-shrink: 0; transition: all var(--t); }
+    .pi-del:hover { background: #fde8e8; color: var(--red); }
+    .tracker-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+    @media(max-width:600px){ .tracker-summary { grid-template-columns: 1fr 1fr; } }
+    .ts-card { background: var(--white); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow-xs); text-align: center; }
+    .ts-val { font-family: var(--font-display); font-size: 1.7rem; font-weight: 500; color: var(--ink); }
+    .ts-label { font-size: .73rem; color: var(--ink3); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; margin-top: 4px; }
+
+    /* GOALS */
+    #view-goals { display: none; background: var(--stone); }
+    #view-goals.active { display: block; }
+    .goals-layout { max-width: 800px; margin: 0 auto; padding: 36px 32px 80px; }
+    .goal-card { background: var(--white); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 14px; display: flex; flex-direction: column; gap: 12px; }
+    .goal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .goal-title { font-weight: 600; font-size: .95rem; }
+    .goal-desc { font-size: .83rem; color: var(--ink3); line-height: 1.6; }
+    .goal-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .goal-pct { font-size: .78rem; font-weight: 700; color: var(--sage-dark); }
+    .goal-status { font-size: .72rem; font-weight: 700; letter-spacing: .05em; padding: 3px 10px; border-radius: 50px; }
+    .status-active { background: var(--sage-pale); color: var(--sage-dark); }
+    .status-done   { background: var(--amber-pale); color: var(--amber); }
+    .goal-add-card { background: var(--white); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-sm); margin-bottom: 28px; }
+    .goal-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+    @media(max-width:480px){ .goal-form-grid { grid-template-columns: 1fr; } }
+
+    /* QUIZ */
+    #view-quiz { display: none; background: var(--stone); }
+    #view-quiz.active { display: block; }
+    .quiz-layout { max-width: 700px; margin: 0 auto; padding: 40px 24px 80px; }
+    .quiz-header { margin-bottom: 32px; }
+    .quiz-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .quiz-step { font-size: .8rem; font-weight: 600; color: var(--ink3); }
+    .question-card { background: var(--white); border-radius: var(--radius-xl); padding: 36px; box-shadow: var(--shadow-sm); animation: fadeUp .3s var(--ease) both; }
+    .q-category { font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--sage); margin-bottom: 12px; }
+    .q-text { font-family: var(--font-display); font-size: 1.45rem; font-weight: 500; font-style: italic; line-height: 1.4; color: var(--ink); margin-bottom: 28px; }
+    .options-grid { display: flex; flex-direction: column; gap: 10px; }
+    .option-btn { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: var(--radius); border: 1.5px solid var(--stone2); background: var(--white); text-align: left; font-size: .88rem; color: var(--ink); cursor: pointer; transition: all var(--t); }
+    .option-btn:hover { border-color: var(--sage-light); background: var(--sage-ghost); }
+    .option-btn.selected { border-color: var(--sage-dark); background: var(--sage-ghost); }
+    .option-btn.selected .option-radio { background: var(--sage-dark); border-color: var(--sage-dark); }
+    .option-btn.selected .option-radio::after { display: block; }
+    .option-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--stone3); flex-shrink: 0; position: relative; transition: all var(--t); background: var(--white); }
+    .option-radio::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 6px; height: 6px; border-radius: 50%; background: var(--white); display: none; }
+    .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; }
+
+    /* RESULTS */
+    #view-results { display: none; background: var(--stone); }
+    #view-results.active { display: block; }
+    .results-layout { max-width: 800px; margin: 0 auto; padding: 40px 24px 80px; }
+    .results-hero { background: var(--sage-dark); border-radius: var(--radius-xl); padding: 48px; margin-bottom: 24px; text-align: center; position: relative; overflow: hidden; }
+    .results-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--sage), var(--sage-dark)); }
+    .results-hero::after { content: ''; position: absolute; inset: 0; opacity: .03; background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 28px 28px; }
+    .results-hero > * { position: relative; z-index: 1; }
+    .results-score { font-family: var(--font-display); font-size: 5rem; font-weight: 700; color: var(--white); line-height: 1; margin-bottom: 6px; }
+    .results-score-label { color: rgba(255,255,255,.5); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16px; }
+    .results-title { font-family: var(--font-display); font-size: 1.6rem; font-weight: 400; font-style: italic; color: var(--white); margin-bottom: 12px; }
+    .results-desc { color: rgba(255,255,255,.65); font-size: .9rem; line-height: 1.7; max-width: 480px; margin: 0 auto; }
+    .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    @media(max-width:600px){ .results-grid { grid-template-columns: 1fr; } }
+    .result-bar-item { margin-bottom: 12px; }
+    .result-bar-label { display: flex; justify-content: space-between; font-size: .8rem; font-weight: 500; margin-bottom: 5px; }
+    .result-bar-track { height: 7px; background: var(--stone2); border-radius: 4px; overflow: hidden; }
+    .result-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--sage-dark), var(--sage-light)); transition: width 1.3s var(--ease); }
+    .results-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 24px; }
+
+    /* GUIDE */
+    #view-guide { display: none; background: var(--stone); }
+    #view-guide.active { display: block; }
+    .guide-layout { max-width: 1060px; margin: 0 auto; padding: 36px 24px 80px; }
+    .guide-hero { background: var(--sage-dark); border-radius: var(--radius-xl); padding: 48px; margin-bottom: 32px; position: relative; overflow: hidden; }
+    .guide-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--sage) 0%, var(--sage-dark) 65%); }
+    .guide-hero::after { content: ''; position: absolute; inset: 0; opacity: .03; background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 28px 28px; }
+    .guide-hero > * { position: relative; z-index: 1; }
+    .guide-hero h1 { font-family: var(--font-display); font-size: 2.2rem; font-weight: 400; font-style: italic; color: var(--white); max-width: 520px; line-height: 1.3; margin-bottom: 10px; }
+    .guide-hero p { color: rgba(255,255,255,.6); max-width: 460px; font-size: .93rem; line-height: 1.7; }
+    .category-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .category-tab { padding: 8px 18px; border-radius: 50px; font-size: .8rem; font-weight: 600; letter-spacing: .04em; border: 1.5px solid var(--stone2); background: var(--white); color: var(--ink2); cursor: pointer; transition: all var(--t); }
+    .category-tab:hover { border-color: var(--sage-light); color: var(--sage-dark); }
+    .category-tab.active { background: var(--sage-dark); color: var(--white); border-color: var(--sage-dark); }
+    .brands-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .brand-card { background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); overflow: hidden; transition: all var(--t); }
+    .brand-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .brand-card-top { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--stone); }
+    .brand-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--stone2); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+    .brand-name { font-weight: 700; font-size: .9rem; }
+    .brand-tagline { font-size: .76rem; color: var(--ink3); margin-top: 2px; }
+    .brand-card-body { padding: 16px 20px; }
+    .brand-desc { font-size: .82rem; color: var(--ink2); line-height: 1.6; margin-bottom: 10px; }
+    .brand-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+    .brand-score { display: flex; align-items: center; gap: 6px; margin-top: 10px; }
+    .brand-stars { color: var(--amber); font-size: .8rem; letter-spacing: 1px; }
+    .brand-score-label { font-size: .72rem; color: var(--ink3); }
+
+    /* HISTORY */
+    #view-history { display: none; background: var(--stone); }
+    #view-history.active { display: block; }
+    .history-layout { max-width: 700px; margin: 0 auto; padding: 36px 32px 80px; }
+    .history-item { background: var(--white); border-radius: var(--radius-lg); padding: 20px 24px; box-shadow: var(--shadow-xs); display: flex; align-items: center; gap: 16px; margin-bottom: 10px; transition: all var(--t); }
+    .history-item:hover { box-shadow: var(--shadow-sm); }
+    .history-score-badge { width: 52px; height: 52px; border-radius: var(--radius-sm); background: var(--sage-pale); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .hs-num { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: var(--sage-dark); }
+    .hi-info { flex: 1; }
+    .hi-title { font-weight: 600; font-size: .9rem; }
+    .hi-date { font-size: .78rem; color: var(--ink3); margin-top: 3px; }
+    .hi-retake { font-size: .78rem; color: var(--sage); font-weight: 600; cursor: pointer; }
+    .hi-retake:hover { text-decoration: underline; }
+
+    /* PAGE HERO */
+    .page-hero { background: var(--sage-dark); padding: 40px; position: relative; overflow: hidden; }
+    .page-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--sage) 0%, var(--sage-dark) 65%); }
+    .page-hero::after { content: ''; position: absolute; inset: 0; opacity: .03; background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 28px 28px; }
+    .page-hero > * { position: relative; z-index: 1; }
+    .page-hero h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 400; font-style: italic; color: var(--white); margin-bottom: 6px; }
+    .page-hero p { color: rgba(255,255,255,.6); font-size: .9rem; }
+
+    /* MISC */
+    .empty-state { text-align: center; padding: 48px 24px; color: var(--ink3); }
+    .empty-state-icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state-title { font-weight: 600; margin-bottom: 6px; }
+    .empty-state-sub { font-size: .85rem; line-height: 1.6; }
+    .text-center { text-align: center; }
+    .mt-2 { margin-top: 8px; } .mt-4 { margin-top: 16px; } .mt-6 { margin-top: 24px; } .mb-4 { margin-bottom: 16px; }
+    .count-up { display: inline; }
+
+    @media(max-width:640px){
+      .auth-form-side { padding: 32px 20px; }
+      .dash-hero { padding: 32px 20px 56px; }
+      .stats-row { padding: 0 16px; grid-template-columns: 1fr 1fr; }
+      .dash-grid { padding: 0 16px 48px; }
+      .navbar { padding: 0 16px; }
+      .cta-card { flex-direction: column; }
+      .nav-links { display: none; }
+      .tracker-layout, .goals-layout, .history-layout { padding: 24px 16px 64px; }
+      .guide-layout { padding: 24px 16px 64px; }
+    }
+  </style>
 </head>
 <body>
 
-  <nav class="navbar">
-    <a href="#" class="logo" onclick="showView('home')">
-      <span class="logo-icon">🌿</span> MindBuy
-    </a>
-    <ul class="nav-links" id="main-nav" style="display: none;">
-      <li><a href="#" id="nav-home" onclick="showView('home')">Inicio</a></li>
-      <li><a href="#" id="nav-quiz" onclick="showView('quiz');initQuiz()">Evaluar</a></li>
-      <li><a href="#" id="nav-brands" onclick="showView('brands')">Guía de Marcas</a></li>
-      <li><a href="#" id="nav-rewards" onclick="showView('rewards')">Recompensas</a></li>
-      <li><a href="#" id="nav-history" onclick="showView('history')">Historial</a></li>
-    </ul>
-    <div class="nav-actions" id="nav-actions">
-      </div>
-  </nav>
+<div id="loading">
+  <div class="load-ring"></div>
+  <span class="load-label">Cargando MindBuy</span>
+</div>
 
-  <main class="app-container">
+<div id="toast-container"></div>
 
-    <section id="view-landing" class="view-panel active">
-      <div class="hero">
-        <h1 class="hero-title">Transforma tus decisiones en <em>impacto positivo</em></h1>
-        <p class="hero-sub">Mide la sostenibilidad de tus compras cotidianas, descubre alternativas éticas reales y obtén recompensas por consumir de manera consciente.</p>
-        <div style="display: flex; gap: 1rem; justify-content: center;">
-          <button class="btn btn-primary" onclick="showView('register')">Crear una cuenta gratis</button>
-          <button class="btn btn-secondary" onclick="showView('login')">Iniciar sesión</button>
+<!-- LOGIN -->
+<div id="view-login" class="view">
+  <div class="auth-layout">
+    <div class="auth-panel">
+      <div class="auth-panel-bg"></div>
+      <div class="auth-panel-pattern"></div>
+      <div class="auth-panel-content">
+        <div class="auth-panel-tag">🌿 Proyecto académico — Universidad</div>
+        <h2 class="auth-panel-headline">Consume con<br />intención,<br />vive mejor.</h2>
+        <p class="auth-panel-sub">MindBuy te ayuda a entender tus patrones de consumo digital y descubrir alternativas sostenibles.</p>
+        <div class="auth-features">
+          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Rastrea tu huella de carbono en compras online</span></div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Quiz personalizado de hábitos de consumo</span></div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Registro de compras y metas sostenibles</span></div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Guía de marcas éticas y alternativas</span></div>
         </div>
       </div>
-    </section>
-
-    <section id="view-login" class="view-panel">
-      <div class="auth-box">
-        <h2 class="auth-title">Bienvenido de vuelta</h2>
-        <p class="auth-subtitle">Ingresa tus credenciales para acceder a tu perfil</p>
-        <form id="login-form" onsubmit="handleLogin(event)">
-          <div class="form-group">
-            <label for="login-email">Correo electrónico</label>
-            <input type="email" id="login-email" class="form-control" placeholder="tu@email.com" required />
-          </div>
-          <div class="form-group">
-            <label for="login-password">Contraseña</label>
-            <input type="password" id="login-password" class="form-control" placeholder="••••••••" required />
-          </div>
-          <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">Entrar a MindBuy</button>
-        </form>
-        <p class="text-center mt-6" style="font-size:0.9rem; color:var(--gray-text);">
-          ¿No tienes cuenta? <a href="#" onclick="showView('register')" style="color:var(--sage); font-weight:600; text-decoration:none;">Regístrate aquí</a>
-        </p>
+    </div>
+    <div class="auth-form-side">
+      <!-- ✅ LOGO REAL — sube /public/logo.png a tu repo de Vercel -->
+      <div class="auth-logo-wrap">
+        <img src="/logo.png" alt="MindBuy" style="height:72px;width:auto;object-fit:contain;" />
       </div>
-    </section>
-
-    <section id="view-register" class="view-panel">
-      <div class="auth-box">
-        <h2 class="auth-title">Únete al cambio</h2>
-        <p class="auth-subtitle">Comienza tu viaje hacia un consumo sostenible hoy</p>
-        <form id="register-form" onsubmit="handleRegister(event)">
-          <div class="form-group">
-            <label for="reg-email">Correo electrónico</label>
-            <input type="email" id="reg-email" class="form-control" placeholder="tu@email.com" required />
-          </div>
-          <div class="form-group">
-            <label for="reg-password">Contraseña</label>
-            <input type="password" id="reg-password" class="form-control" placeholder="Mínimo 6 caracteres" minlength="6" required />
-          </div>
-          <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">Crear mi cuenta</button>
-        </form>
-        <p class="text-center mt-6" style="font-size:0.9rem; color:var(--gray-text);">
-          ¿Ya eres miembro? <a href="#" onclick="showView('login')" style="color:var(--sage); font-weight:600; text-decoration:none;">Inicia sesión</a>
-        </p>
-      </div>
-    </section>
-
-    <section id="view-home" class="view-panel">
-      <div class="view-header">
-        <h2 class="view-title" id="welcome-user">¡Hola de nuevo!</h2>
-        <p class="view-subtitle">Este es el estado de tu consumo consciente hoy.</p>
-      </div>
-      
-      <div class="grid-3">
-        <div class="card">
-          <h3 style="font-family:var(--font-serif); font-size:1.4rem; color:var(--sage-dark); margin-bottom:0.5rem;">Tu Huella Reciente</h3>
-          <p style="font-size:2.5rem; font-weight:700; color:var(--charcoal);">84<span style="font-size:1rem; color:var(--gray-text); font-weight:400;">/100 pts</span></p>
-          <p style="color:var(--gray-text); font-size:0.9rem; margin-top:0.5rem;">¡Estás un 12% arriba del promedio de tu zona urbana!</p>
-        </div>
-        <div class="card">
-          <h3 style="font-family:var(--font-serif); font-size:1.4rem; color:var(--sage-dark); margin-bottom:0.5rem;">Puntos Disponibles</h3>
-          <p style="font-size:2.5rem; font-weight:700; color:var(--sage);" id="dash-points">1,250</p>
-          <p style="color:var(--gray-text); font-size:0.9rem; margin-top:0.5rem;">Equivale a un árbol plantado o cupones de descuento eco.</p>
-        </div>
-        <div class="card" style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-center; border-style:dashed; background:transparent;">
-          <p style="font-size:1.5rem; margin-bottom:0.5rem;">📝</p>
-          <button class="btn btn-primary" onclick="showView('quiz');initQuiz()">Evaluar una compra nueva</button>
+      <h1 class="auth-form-title">Bienvenido de vuelta</h1>
+      <p class="auth-form-sub">Inicia sesión para continuar tu viaje hacia un consumo más consciente.</p>
+      <div class="form-stack">
+        <div class="field"><label>Correo Electrónico</label><input type="email" id="login-email" placeholder="tu@correo.com" /></div>
+        <div class="field"><label>Contraseña</label><input type="password" id="login-password" placeholder="••••••••" /></div>
+        <div class="form-actions">
+          <button class="btn btn-primary btn-full btn-lg" id="btn-login">Iniciar Sesión →</button>
+          <div class="divider">o</div>
+          <button class="btn btn-outline btn-full" id="btn-go-register">Crear cuenta nueva</button>
         </div>
       </div>
-    </section>
+      <button class="dev-bypass" id="btn-dev-bypass">🌿 Modo Desarrollador — Acceso directo</button>
+    </div>
+  </div>
+</div>
 
-    <section id="view-quiz" class="view-panel">
-      <div class="view-header text-center">
-        <h2 class="view-title">Evaluador de Consumo</h2>
-        <p class="view-subtitle">Analicemos el impacto ético y ambiental de tu última adquisición.</p>
-      </div>
-
-      <div class="quiz-container">
-        <div class="progress-bar"><div class="progress-fill" id="quiz-progress"></div></div>
-        <div id="quiz-card-content">
-          </div>
-      </div>
-    </section>
-
-    <section id="view-brands" class="view-panel">
-      <div class="view-header">
-        <h2 class="view-title">Guía de Marcas Responsables</h2>
-        <p class="view-subtitle">Explora alternativas con altas calificaciones en comercio justo y baja huella de carbono.</p>
-      </div>
-
-      <div class="tabs-container" id="guide-tabs">
-        <button class="category-tab active" data-cat="all">Todos</button>
-        <button class="category-tab" data-cat="moda">Moda Circular</button>
-        <button class="category-tab" data-cat="alimentacion">Alimentación Bio</button>
-        <button class="category-tab" data-cat="hogar">Hogar & Limpieza</button>
-      </div>
-
-      <div class="grid-3" id="brands-grid">
+<!-- REGISTER -->
+<div id="view-register" class="view">
+  <div class="auth-layout">
+    <div class="auth-panel">
+      <div class="auth-panel-bg"></div>
+      <div class="auth-panel-pattern"></div>
+      <div class="auth-panel-content">
+        <div class="auth-panel-tag">🌍 Únete a la comunidad</div>
+        <h2 class="auth-panel-headline">Tu viaje hacia<br />el consumo<br />consciente.</h2>
+        <p class="auth-panel-sub">Registra tus hábitos, fíjate metas y descubre qué tan sostenibles son tus decisiones de compra.</p>
+        <div class="auth-features">
+          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Análisis personalizado de tus hábitos</span></div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Tracker de compras conscientes</span></div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div><span>Metas de consumo con seguimiento</span></div>
         </div>
-    </section>
-
-    <section id="view-rewards" class="view-panel">
-      <div class="view-header">
-        <h2 class="view-title">Canjear Recompensas</h2>
-        <p class="view-subtitle">Usa tus Eco-Puntos acumulados para financiar proyectos ecológicos directos o en marcas asociadas.</p>
       </div>
-
-      <div class="points-banner">
-        <div>
-          <p class="pb-label">Tu saldo total actual</p>
-          <p class="pb-val" id="rewards-balance">1,250</p>
-        </div>
-        <p style="max-width:300px; font-size:0.95rem; opacity:0.9; text-align:right;">¡Gracias por tus elecciones conscientes! Cada punto representa un respiro real para el planeta.</p>
+    </div>
+    <div class="auth-form-side">
+      <!-- ✅ LOGO REAL -->
+      <div class="auth-logo-wrap">
+        <img src="/logo.png" alt="MindBuy" style="height:72px;width:auto;object-fit:contain;" />
       </div>
+      <h1 class="auth-form-title">Crear cuenta</h1>
+      <p class="auth-form-sub">Es gratis y toma menos de 2 minutos.</p>
+      <div class="form-stack">
+        <div class="field"><label>Nombre Completo</label><input type="text" id="reg-name" placeholder="Tu nombre completo" /></div>
+        <div class="field"><label>Ocupación</label>
+          <select id="reg-occupation">
+            <option value="">Seleccionar…</option>
+            <option>Estudiante</option>
+            <option>Profesional independiente</option>
+            <option>Empleado</option>
+            <option>Emprendedor</option>
+            <option>Docente / Investigador</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="field"><label>Correo Electrónico</label><input type="email" id="reg-email" placeholder="tu@correo.com" /></div>
+        <div class="field"><label>Contraseña</label><input type="password" id="reg-password" placeholder="Mínimo 8 caracteres" /></div>
+        <div class="form-actions">
+          <button class="btn btn-primary btn-full btn-lg" id="btn-register">Crear mi cuenta →</button>
+        </div>
+      </div>
+      <p class="form-footer">¿Ya tienes cuenta? <button onclick="showView('login')">Iniciar sesión</button></p>
+    </div>
+  </div>
+</div>
 
-      <div class="grid-3">
-        <div class="card reward-card">
-          <div>
-            <span style="font-size:2rem;">🌲</span>
-            <h3 style="font-family:var(--font-serif); margin:0.5rem 0 0.25rem 0;">Plantar un Árbol Nativo</h3>
-            <p style="color:var(--gray-text); font-size:0.9rem;">Reforestación directa en zonas afectadas de la Amazonía en colaboración con ONGs verificadas.</p>
-          </div>
-          <div>
-            <span class="rc-cost">500 puntos</span>
-            <button class="btn btn-primary mt-4" style="width:100%;" onclick="claimReward('Árbol Nativo', 500)">Canjear Recompensa</button>
+<!-- NAVBAR -->
+<nav class="navbar" id="main-nav" style="display:none">
+  <!-- ✅ LOGO REAL en navbar — más pequeño -->
+  <div class="logo">
+    <img src="/logo.png" alt="MindBuy" style="height:36px;width:auto;object-fit:contain;" />
+  </div>
+  <ul class="nav-links" id="nav-links">
+    <li class="nav-link active" data-view="dashboard">Inicio</li>
+    <li class="nav-link" data-view="tracker">Mis compras</li>
+    <li class="nav-link" data-view="goals">Metas</li>
+    <li class="nav-link" data-view="quiz">Evaluación</li>
+    <li class="nav-link" data-view="guide">Alternativas</li>
+    <li class="nav-link" data-view="history">Historial</li>
+  </ul>
+  <div class="nav-user">
+    <span class="nav-username" id="nav-username"></span>
+    <div class="avatar" id="nav-avatar">?</div>
+    <button class="btn btn-ghost btn-sm" id="btn-logout">Salir</button>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div id="view-dashboard" class="view">
+  <div class="dash-hero">
+    <div class="dash-hero-inner">
+      <p class="dash-eyebrow" id="dash-time-label">Buenos días ☀️</p>
+      <h1 class="dash-greeting" id="dash-greeting">Hola, Participante</h1>
+      <p class="dash-sub">Aquí está tu resumen de impacto consciente.</p>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card c-sage"><div class="stat-icon">🌿</div><div class="stat-val"><span class="count-up" data-target="4.2">0</span><sup>kg CO₂</sup></div><div class="stat-label">Huella evitada este mes</div><div class="stat-delta">↓ 18% vs. mes anterior</div></div>
+    <div class="stat-card c-amber"><div class="stat-icon">💰</div><div class="stat-val">$<span class="count-up" data-target="127">0</span></div><div class="stat-label">Ahorrado en compras impulsivas</div><div class="stat-delta">↑ 32% vs. mes anterior</div></div>
+    <div class="stat-card c-teal"><div class="stat-icon">🛍️</div><div class="stat-val"><span class="count-up" data-target="9">0</span><sup>artículos</sup></div><div class="stat-label">Compras impulsivas evitadas</div><div class="stat-delta">Este mes</div></div>
+    <div class="stat-card c-rose"><div class="stat-icon">♻️</div><div class="stat-val"><span class="count-up" data-target="3">0</span><sup>marcas</sup></div><div class="stat-label">Alternativas sostenibles usadas</div><div class="stat-delta">Descubriste esta semana</div></div>
+  </div>
+  <div class="dash-grid">
+    <div>
+      <p class="section-eyebrow">¿Sabías que…?</p>
+      <p class="section-title">Datos que cambian perspectivas</p>
+      <div class="fact-slider">
+        <div class="fact-slides-wrap">
+          <div class="fact-slides" id="fact-slides">
+            <div class="fact-slide"><div class="fact-number">Dato 01</div><p class="fact-text">La industria de la moda rápida es responsable del 10% de las emisiones mundiales de carbono.</p><p class="fact-source">— UNEP, 2023</p></div>
+            <div class="fact-slide"><div class="fact-number">Dato 02</div><p class="fact-text">El colombiano promedio devuelve el 30% de lo que compra online, generando más emisiones que la compra misma.</p><p class="fact-source">— MinCIT Colombia, 2023</p></div>
+            <div class="fact-slide"><div class="fact-number">Dato 03</div><p class="fact-text">Comprar una prenda de segunda mano reduce su huella de carbono hasta un 82% comparado con una nueva.</p><p class="fact-source">— ThredUp Impact Report, 2022</p></div>
+            <div class="fact-slide"><div class="fact-number">Dato 04</div><p class="fact-text">El 73% de los consumidores millennials paga más por productos de marcas sostenibles si confían en ellas.</p><p class="fact-source">— Nielsen Global Survey, 2023</p></div>
+            <div class="fact-slide"><div class="fact-number">Dato 05</div><p class="fact-text">Esperar 48 horas antes de una compra impulsiva reduce la probabilidad de realizarla en un 64%.</p><p class="fact-source">— Journal of Consumer Psychology, 2021</p></div>
           </div>
         </div>
-        <div class="card reward-card">
-          <div>
-            <span style="font-size:2rem;">👜</span>
-            <h3 style="font-family:var(--font-serif); margin:0.5rem 0 0.25rem 0;">20% Off en EcoModa</h3>
-            <p style="color:var(--gray-text); font-size:0.9rem;">Cupón de descuento válido para toda la colección de ropa orgánica de la marca EcoThread.</p>
-          </div>
-          <div>
-            <span class="rc-cost">350 puntos</span>
-            <button class="btn btn-primary mt-4" style="width:100%;" onclick="claimReward('20% EcoModa', 350)">Canjear Recompensa</button>
-          </div>
-        </div>
-        <div class="card reward-card">
-          <div>
-            <span style="font-size:2rem;">☕</span>
-            <h3 style="font-family:var(--font-serif); margin:0.5rem 0 0.25rem 0;">Café de Comercio Justo gratis</h3>
-            <p style="color:var(--gray-text); font-size:0.9rem;">Código QR canjeable por una bebida mediana en cualquier establecimiento de la red GranoÉtico.</p>
-          </div>
-          <div>
-            <span class="rc-cost">200 puntos</span>
-            <button class="btn btn-primary mt-4" style="width:100%;" onclick="claimReward('Café Gratis', 200)">Canjear Recompensa</button>
+        <div class="fact-controls">
+          <div class="fact-dots" id="fact-dots"></div>
+          <div class="fact-arrows">
+            <div class="fact-arrow" id="fact-prev">←</div>
+            <div class="fact-arrow" id="fact-next">→</div>
           </div>
         </div>
       </div>
-    </section>
-
-    <section id="view-history" class="view-panel">
-      <div class="view-header">
-        <h2 class="view-title">Tu Historial de Evaluaciones</h2>
-        <p class="view-subtitle">Consulta el registro cronológico completo de los análisis que has realizado en tus compras.</p>
+    </div>
+    <div>
+      <p class="section-eyebrow">Cómo funciona</p>
+      <p class="section-title">Tu camino hacia el consumo consciente</p>
+      <div class="card"><div class="card-body">
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-left"><div class="tl-dot">1</div><div class="tl-line"></div></div><div class="tl-content"><p class="tl-title">Regístrate y conoce tu perfil</p><p class="tl-desc">Crea tu cuenta y descubre cómo son tus hábitos actuales de consumo digital.</p></div></div>
+          <div class="tl-item"><div class="tl-left"><div class="tl-dot">2</div><div class="tl-line"></div></div><div class="tl-content"><p class="tl-title">Completa la evaluación</p><p class="tl-desc">12 preguntas que analizan tu relación con las compras online y la sostenibilidad.</p></div></div>
+          <div class="tl-item"><div class="tl-left"><div class="tl-dot">3</div><div class="tl-line"></div></div><div class="tl-content"><p class="tl-title">Registra tus compras</p><p class="tl-desc">Lleva un diario de tus compras y clasifícalas para entender tus patrones reales.</p></div></div>
+          <div class="tl-item"><div class="tl-left"><div class="tl-dot">4</div><div class="tl-line"></div></div><div class="tl-content"><p class="tl-title">Fíjate metas y mide tu progreso</p><p class="tl-desc">Establece compromisos sostenibles y celebra cada avance.</p></div></div>
+        </div>
+      </div></div>
+    </div>
+    <div>
+      <p class="section-eyebrow">Video introductorio</p>
+      <p class="section-title">Entiende el impacto</p>
+      <div class="card"><div class="card-body" style="padding:16px">
+        <div class="video-wrap"><iframe src="https://www.youtube.com/embed/BiSYoeqb_VY?rel=0" title="Consumo consciente" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+        <p style="font-size:.8rem;color:var(--ink3);margin-top:12px;line-height:1.6"><strong>The True Cost</strong> — Documental sobre el verdadero precio de la moda rápida.</p>
+      </div></div>
+    </div>
+    <div>
+      <p class="section-eyebrow">Acción inmediata</p>
+      <p class="section-title">¿Por dónde empezar?</p>
+      <div class="cta-card" style="margin-bottom:14px"><div class="cta-icon">🧠</div><div><h3>Evaluación de Hábitos</h3><p>12 preguntas que analizan tus patrones de compra digital. Toma 3 minutos.</p><div class="cta-actions"><button class="btn btn-primary btn-sm" onclick="showView('quiz');initQuiz()">Comenzar →</button></div></div></div>
+      <div class="cta-card"><div class="cta-icon">📋</div><div><h3>Registrar una compra</h3><p>Anota tu última compra y clasifícala para empezar tu diario.</p><div class="cta-actions"><button class="btn btn-outline btn-sm" onclick="showView('tracker')">Ir al tracker →</button></div></div></div>
+    </div>
+    <div class="dash-span2">
+      <p class="section-eyebrow">Alternativas sostenibles</p>
+      <p class="section-title">Marcas que cuidan el planeta</p>
+      <div class="alt-grid">
+        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">👗</div><p class="alt-card-name">Patagonia</p><p class="alt-card-cat">Outdoor sostenible</p></div>
+        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">👟</div><p class="alt-card-name">Allbirds</p><p class="alt-card-cat">Calzado mínima huella</p></div>
+        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🔄</div><p class="alt-card-name">ThredUp</p><p class="alt-card-cat">Segunda mano curada</p></div>
+        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🌳</div><p class="alt-card-name">Tentree</p><p class="alt-card-cat">10 árboles por compra</p></div>
+        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🛍️</div><p class="alt-card-name">Vinted</p><p class="alt-card-cat">Intercambio de ropa</p></div>
+        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🧴</div><p class="alt-card-name">Lush</p><p class="alt-card-cat">Cosmética sin plástico</p></div>
+        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">💻</div><p class="alt-card-name">Back Market</p><p class="alt-card-cat">Tech reacondicionado</p></div>
+        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🏔️</div><p class="alt-card-name">Eileen Fisher</p><p class="alt-card-cat">Moda atemporal</p></div>
       </div>
+    </div>
+  </div>
+</div>
 
-      <div class="history-list" id="history-list">
-        </div>
-    </section>
+<!-- TRACKER -->
+<div id="view-tracker" class="view">
+  <div class="page-hero"><h1>Mis Compras</h1><p>Registra y clasifica tus compras para entender tus patrones de consumo.</p></div>
+  <div class="tracker-layout">
+    <div class="tracker-summary">
+      <div class="ts-card"><div class="ts-val" id="ts-total">$0</div><div class="ts-label">Total registrado</div></div>
+      <div class="ts-card"><div class="ts-val" id="ts-impulsiva">0</div><div class="ts-label">Compras impulsivas</div></div>
+      <div class="ts-card"><div class="ts-val" id="ts-count">0</div><div class="ts-label">Compras registradas</div></div>
+    </div>
+    <div class="tracker-form-card">
+      <p class="section-eyebrow">Nueva compra</p>
+      <p class="section-title" style="margin-bottom:0">Registrar compra</p>
+      <div class="tracker-form-grid">
+        <div class="field"><label>Producto</label><input type="text" id="tr-product" placeholder="Ej: Camiseta SHEIN" /></div>
+        <div class="field"><label>Monto (COP)</label><input type="number" id="tr-amount" placeholder="0" min="0" /></div>
+        <div class="field"><label>Tipo</label><select id="tr-type"><option value="necesaria">✅ Necesaria</option><option value="planeada">📋 Planeada</option><option value="impulsiva">⚡ Impulsiva</option></select></div>
+        <div style="display:flex;align-items:flex-end"><button class="btn btn-primary btn-full" id="btn-add-purchase">+ Agregar</button></div>
+      </div>
+    </div>
+    <p class="section-eyebrow" style="margin-bottom:12px">Historial de compras</p>
+    <div class="purchase-list" id="purchase-list">
+      <div class="empty-state"><div class="empty-state-icon">🛒</div><p class="empty-state-title">Aún no hay compras registradas</p><p class="empty-state-sub">Registra tu primera compra arriba para empezar a rastrear tus hábitos.</p></div>
+    </div>
+  </div>
+</div>
 
-  </main>
+<!-- GOALS -->
+<div id="view-goals" class="view">
+  <div class="page-hero"><h1>Mis Metas</h1><p>Define compromisos hacia un consumo más consciente y mide tu avance.</p></div>
+  <div class="goals-layout">
+    <div class="goal-add-card">
+      <p class="section-eyebrow">Nueva meta</p>
+      <p class="section-title" style="margin-bottom:0">Crear compromiso</p>
+      <div class="goal-form-grid">
+        <div class="field"><label>Título de la meta</label><input type="text" id="goal-title" placeholder="Ej: No comprar fast fashion en 30 días" /></div>
+        <div class="field"><label>Categoría</label><select id="goal-category"><option value="consumo">🛍️ Consumo</option><option value="presupuesto">💰 Presupuesto</option><option value="sostenibilidad">🌿 Sostenibilidad</option><option value="habitos">🧠 Hábitos</option></select></div>
+        <div class="field" style="grid-column:span 2"><label>Descripción</label><input type="text" id="goal-desc" placeholder="Describe cómo vas a lograr esta meta..." /></div>
+      </div>
+      <button class="btn btn-primary mt-4" id="btn-add-goal">+ Agregar meta</button>
+    </div>
+    <p class="section-eyebrow" style="margin-bottom:12px">Compromisos activos</p>
+    <div id="goals-list">
+      <div class="goal-card" data-id="g0">
+        <div class="goal-header"><div><p class="goal-title">🛍️ Evitar compras en SHEIN o Temu por 30 días</p><p class="goal-desc">Explorar alternativas de segunda mano como Vinted antes de recurrir al fast fashion.</p></div><span class="goal-status status-active">Activa</span></div>
+        <div class="progress"><div class="progress-fill" style="width:45%"></div></div>
+        <div class="goal-footer"><span class="goal-pct">45% completado</span><button class="btn btn-sm btn-outline" onclick="toggleGoal(this, 'g0')">Marcar como lograda</button></div>
+      </div>
+      <div class="goal-card" data-id="g1">
+        <div class="goal-header"><div><p class="goal-title">💰 Registrar todas mis compras durante un mes</p><p class="goal-desc">Anotar cada compra online, sin importar el monto, para tener consciencia real del gasto.</p></div><span class="goal-status status-active">Activa</span></div>
+        <div class="progress"><div class="progress-fill" style="width:70%"></div></div>
+        <div class="goal-footer"><span class="goal-pct">70% completado</span><button class="btn btn-sm btn-outline" onclick="toggleGoal(this, 'g1')">Marcar como lograda</button></div>
+      </div>
+    </div>
+  </div>
+</div>
 
-  <script>
-    // Configuración Inicial de Supabase (Sustituye por tus llaves reales en producción)
-    const SUPABASE_URL = "https://your-supabase-project.supabase.co";
-    const SUPABASE_ANON_KEY = "your-anon-key";
-    let supabase = null;
-    
-    try {
-      supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } catch(e) {
-      console.warn("Supabase no inicializado. Ejecutando la interfaz en modo offline demostrativo.");
+<!-- QUIZ -->
+<div id="view-quiz" class="view">
+  <div class="quiz-layout">
+    <div class="quiz-header">
+      <div class="quiz-meta"><span class="quiz-step" id="quiz-step">Pregunta 1 de 12</span><span class="quiz-step" id="quiz-time">⏱ ~3 min</span></div>
+      <div class="progress"><div class="progress-fill" id="quiz-progress" style="width:8%"></div></div>
+    </div>
+    <div id="quiz-question-container"></div>
+    <div class="quiz-nav">
+      <button class="btn btn-ghost" id="quiz-prev" onclick="quizPrev()" style="visibility:hidden">← Anterior</button>
+      <button class="btn btn-primary" id="quiz-next" onclick="quizNext()">Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="view-results" class="view">
+  <div class="results-layout">
+    <div class="results-hero">
+      <div class="results-score" id="result-score">72</div>
+      <p class="results-score-label">Puntuación de consumo consciente</p>
+      <h2 class="results-title" id="result-title">Consumidor en Transición</h2>
+      <p class="results-desc" id="result-desc">Tienes buenos instintos pero aún hay áreas de mejora.</p>
+    </div>
+    <div class="results-grid">
+      <div class="card"><div class="card-header">Análisis por Categoría</div><div class="card-body"><div id="result-bars"></div></div></div>
+      <div class="card"><div class="card-header">Tus Fortalezas</div><div class="card-body"><div id="result-strengths"></div></div></div>
+    </div>
+    <div class="card" style="margin-bottom:16px"><div class="card-header">Próximos pasos recomendados</div><div class="card-body"><div id="result-steps" style="display:flex;flex-direction:column;gap:12px"></div></div></div>
+    <div class="results-actions">
+      <button class="btn btn-primary" onclick="showView('guide')">Ver alternativas →</button>
+      <button class="btn btn-outline" onclick="showView('quiz');initQuiz()">Repetir evaluación</button>
+      <button class="btn btn-ghost" onclick="showView('dashboard')">Volver al panel</button>
+    </div>
+  </div>
+</div>
+
+<!-- GUIDE -->
+<div id="view-guide" class="view">
+  <div class="guide-layout">
+    <div class="guide-hero">
+      <h1>Alternativas Conscientes<br />al Fast Fashion Digital</h1>
+      <p>Cada compra es una decisión. Aquí encontrarás marcas verificadas, plataformas de segunda mano y recursos que alinean tu consumo con tus valores.</p>
+    </div>
+    <div class="category-tabs" id="guide-tabs">
+      <button class="category-tab active" data-cat="all">Todo</button>
+      <button class="category-tab" data-cat="ropa">👗 Ropa</button>
+      <button class="category-tab" data-cat="calzado">👟 Calzado</button>
+      <button class="category-tab" data-cat="segunda">♻️ Segunda mano</button>
+      <button class="category-tab" data-cat="cosmetica">🧴 Cosmética</button>
+      <button class="category-tab" data-cat="hogar">🏠 Hogar</button>
+      <button class="category-tab" data-cat="tech">💻 Tecnología</button>
+    </div>
+    <div class="brands-grid" id="brands-grid"></div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="view-history" class="view">
+  <div class="page-hero"><h1>Historial de Evaluaciones</h1><p>Revisa tus resultados anteriores y observa tu evolución.</p></div>
+  <div class="history-layout">
+    <div id="history-list">
+      <div class="empty-state"><div class="empty-state-icon">📊</div><p class="empty-state-title">Aún no tienes evaluaciones</p><p class="empty-state-sub">Completa el quiz por primera vez para ver tu historial aquí.</p><button class="btn btn-primary mt-6" onclick="showView('quiz');initQuiz()">Hacer mi primera evaluación →</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL  = 'https://YOUR_PROJECT.supabase.co';
+const SUPABASE_ANON = 'YOUR_ANON_KEY';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+let currentUser = null, quizAnswers = {}, currentQuestion = 0, factSlide = 0;
+let purchases = [], goals = [], quizHistory = [];
+const FACT_COUNT = 5;
+
+const questions = [
+  { id:'q1',  cat:'Frecuencia',     text:'¿Con qué frecuencia realizas compras en plataformas como Temu, SHEIN o similares?',            opts:['Nunca','A veces (1-2 veces al mes)','Frecuentemente (1-2 veces a la semana)','Constantemente (casi todos los días)'] },
+  { id:'q2',  cat:'Comportamiento', text:'¿Revisas reseñas y la procedencia de los productos antes de comprar?',                         opts:['Siempre lo hago','La mayoría de las veces','Rara vez','Nunca lo hago'] },
+  { id:'q3',  cat:'Impulsividad',   text:'¿Con qué frecuencia compras artículos que no estaban en tu lista inicial?',                    opts:['Nunca','Ocasionalmente','Con frecuencia','Siempre'] },
+  { id:'q4',  cat:'Presupuesto',    text:'¿Llevas un registro de cuánto gastas mensualmente en compras online?',                         opts:['Sí, con detalle','Aproximadamente','Raramente','No llevo registro'] },
+  { id:'q5',  cat:'Sostenibilidad', text:'¿Consideras el impacto ambiental de un producto antes de comprarlo?',                          opts:['Siempre','Con frecuencia','Pocas veces','Nunca'] },
+  { id:'q6',  cat:'Segunda mano',   text:'¿Has comprado o considerarías comprar ropa o artículos de segunda mano?',                      opts:['Sí, lo hago regularmente','Lo he hecho alguna vez','Lo consideraría','No me interesa'] },
+  { id:'q7',  cat:'Emociones',      text:'¿Tus compras online están motivadas principalmente por?',                                      opts:['Necesidad real','Ofertas o descuentos','Aburrimiento o estrés','Influencia de redes sociales'] },
+  { id:'q8',  cat:'Devoluciones',   text:'¿Con qué frecuencia devuelves artículos que compraste online?',                                opts:['Nunca los devuelvo','Ocasionalmente','Con frecuencia','Casi siempre'] },
+  { id:'q9',  cat:'Información',    text:'¿Investigas las condiciones laborales de las marcas donde compras?',                           opts:['Sí, es importante para mí','A veces lo hago','Rara vez','No suelo hacerlo'] },
+  { id:'q10', cat:'Hábitos',        text:'¿Cuánto tiempo del día dedicas a navegar tiendas online (sin necesidad de comprar)?',          opts:['Menos de 15 min','Entre 15 min y 1 hora','Entre 1 y 3 horas','Más de 3 horas'] },
+  { id:'q11', cat:'Alternativas',   text:'¿Conoces marcas o plataformas de comercio sostenible como alternativa al fast fashion?',       opts:['Sí, y las uso regularmente','Las conozco pero no las uso','He oído de algunas','No las conozco'] },
+  { id:'q12', cat:'Cambio',         text:'¿Estarías dispuesto/a a pagar un poco más por un producto si sabes que es ético y sostenible?',opts:['Sí, definitivamente','Dependiendo del precio','Lo dudaría','No pagaría más'] },
+];
+const scores = [3,2,1,0];
+
+const brands = [
+  { name:'Patagonia',    icon:'🏔️', tagline:'Outdoor con responsabilidad', cat:'ropa',      badges:['B Corp','Orgánico','Reciclado'], stars:5, desc:'Ropa outdoor de alta calidad con programa de reparación y reciclaje.' },
+  { name:'Tentree',      icon:'🌳', tagline:'10 árboles por cada compra',   cat:'ropa',      badges:['B Corp','Neutro carbono'], stars:5, desc:'Empresa de ropa que planta 10 árboles por cada artículo vendido.' },
+  { name:'Eileen Fisher',icon:'✂️', tagline:'Moda atemporal sostenible',    cat:'ropa',      badges:['Orgánico','Comercio justo'], stars:4, desc:'Diseños minimalistas con enfoque en longevidad y materiales sostenibles.' },
+  { name:'Allbirds',     icon:'🐑', tagline:'Calzado de lana natural',      cat:'calzado',   badges:['Neutro carbono','Reciclado'], stars:5, desc:'Zapatillas cómodas fabricadas con lana merino y caña de azúcar.' },
+  { name:'Veja',         icon:'👟', tagline:'Sneakers éticos de Brasil',    cat:'calzado',   badges:['Comercio justo','Orgánico'], stars:4, desc:'Calzado producido con algodón orgánico y jebe amazónico certificado.' },
+  { name:'ThredUp',      icon:'🔄', tagline:'Segunda mano curada online',   cat:'segunda',   badges:['Economía circular','Verificado'], stars:4, desc:'La mayor plataforma de ropa usada de alta calidad para mujer y niños.' },
+  { name:'Vinted',       icon:'🛍️', tagline:'Compra y vende sin comisión', cat:'segunda',   badges:['P2P','Sin comisión vendedor'], stars:4, desc:'Plataforma europea líder en intercambio de ropa entre particulares.' },
+  { name:'Depop',        icon:'📸', tagline:'Moda vintage y única',         cat:'segunda',   badges:['Comunidad','Vintage'], stars:4, desc:'Mercado social de moda de segunda mano con enfoque en piezas únicas.' },
+  { name:'Lush',         icon:'🛁', tagline:'Cosmética fresca, sin plástico',cat:'cosmetica', badges:['Sin empaques','Vegano','Cruelty-free'], stars:5, desc:'Cosmética artesanal con mínimo embalaje y sin ingredientes animales.' },
+  { name:'The Body Shop',icon:'🌸', tagline:'Belleza con propósito',        cat:'cosmetica', badges:['B Corp','Comercio justo'], stars:4, desc:'Marca pionera en cosmética ética y activismo social desde 1976.' },
+  { name:'IKEA Segundo', icon:'🪑', tagline:'Muebles de segunda mano IKEA', cat:'hogar',     badges:['Economía circular','Reciclado'], stars:4, desc:'Programa Buy Back de IKEA para revender tus muebles usados.' },
+  { name:'Back Market',  icon:'💻', tagline:'Tech reacondicionado premium', cat:'tech',      badges:['Verificado','Garantía 1 año'], stars:5, desc:'Plataforma de dispositivos reacondicionados con garantía completa.' },
+  { name:'Swappa',       icon:'📱', tagline:'Smartphones usados verificados',cat:'tech',     badges:['Sin robots','P2P','Verificado'], stars:4, desc:'Mercado de teléfonos y tech usado revisado por personas reales.' },
+];
+
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + name);
+  if (el) el.classList.add('active');
+  const hasNav = ['dashboard','tracker','goals','quiz','results','guide','history'].includes(name);
+  document.getElementById('main-nav').style.display = hasNav ? 'flex' : 'none';
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.view === name));
+  if (name === 'dashboard') animateCounters();
+  if (name === 'guide') renderBrands('all');
+  if (name === 'tracker') renderPurchases();
+  if (name === 'history') renderHistory();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toast(title, msg='', error=false) {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast' + (error ? ' error' : '');
+  t.innerHTML = `<div class="toast-icon">${error?'⚠️':'✅'}</div><div><div class="toast-title">${title}</div>${msg?`<div class="toast-msg">${msg}</div>`:''}</div>`;
+  c.appendChild(t); setTimeout(() => t.remove(), 4200);
+}
+
+function setLoading(b) { document.getElementById('loading').classList.toggle('hidden', !b); }
+
+function animateCounters() {
+  document.querySelectorAll('.count-up').forEach(el => {
+    const target = parseFloat(el.dataset.target);
+    const isFloat = target % 1 !== 0;
+    const dur = 1400; const start = performance.now();
+    function step(now) {
+      const t = Math.min((now - start) / dur, 1);
+      const ease = 1 - Math.pow(1-t, 3);
+      el.textContent = isFloat ? (target*ease).toFixed(1) : Math.round(target*ease);
+      if (t < 1) requestAnimationFrame(step);
     }
+    requestAnimationFrame(step);
+  });
+}
 
-    // Estado local del Usuario
-    let currentUser = null;
-    let userPoints = 1250;
-    let quizHistory = [
-      { id: 1, title: 'Camiseta de algodón convencional', date: 'Mayo 14, 2026', score: 45 },
-      { id: 2, title: 'Detergente biodegradable granel', date: 'Mayo 10, 2026', score: 95 },
-      { id: 3, title: 'Zapatillas de cuero sintético reciclado', date: 'Abril 28, 2026', score: 82 }
-    ];
+async function initAuth() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) { setUser(session.user); showView('dashboard'); }
+  else showView('login');
+  setLoading(false);
+  document.getElementById('loading').classList.add('hidden');
+}
 
-    // Datos Ficticios para la Guía de Marcas Responsables
-    const BRANDS_DATA = [
-      { name: 'NaturaThread', cat: 'moda', desc: 'Ropa confeccionada 100% con algodón orgánico y tintes naturales.', stars: 5 },
-      { name: 'EcoVibe Shoes', cat: 'moda', desc: 'Calzado hecho a partir de plásticos recolectados del océano.', stars: 4 },
-      { name: 'VerdeGranel', cat: 'alimentacion', desc: 'Despensa completa sin empaques plásticos, apoyando a agricultores locales.', stars: 5 },
-      { name: 'BioPure Co.', cat: 'hogar', desc: 'Productos de limpieza concentrados con empaques rellenables infinitamente.', stars: 4 },
-      { name: 'PureEssence', cat: 'hogar', desc: 'Cosmética sólida, vegana y libre de crueldad animal.', stars: 5 }
-    ];
+function setUser(user) {
+  currentUser = user;
+  const name = user?.user_metadata?.nombre || user?.email?.split('@')[0] || 'Participante';
+  document.getElementById('nav-username').textContent = name;
+  document.getElementById('nav-avatar').textContent = name.charAt(0).toUpperCase();
+  const h = new Date().getHours();
+  const time = h<12?'Buenos días ☀️':h<18?'Buenas tardes 🌤️':'Buenas noches 🌙';
+  const word = h<12?'Buenos días':h<18?'Buenas tardes':'Buenas noches';
+  document.getElementById('dash-time-label').textContent = time;
+  document.getElementById('dash-greeting').textContent = `${word}, ${name.split(' ')[0]}`;
+}
 
-    // Banco de Preguntas Estilo Diagnóstico Modular
-    const QUIZ_QUESTIONS = [
-      {
-        q: "¿Cuál es el origen o material principal de este producto?",
-        options: [
-          { text: "Material sintético virgen / Plástico derivado del petróleo", score: 20 },
-          { text: "Material natural de explotación convencional (Algodón común, Madera común)", score: 50 },
-          { text: "Material reciclado, certificado orgánico o de fuentes forestales controladas", score: 100 }
-        ]
-      },
-      {
-        q: "¿Qué tipo de empaque o presentación exterior posee al adquirirlo?",
-        options: [
-          { text: "Blíster plástico doble o empaque excesivo no reciclable", score: 15 },
-          { text: "Caja de cartón simple o empaque plástico reciclable común", score: 60 },
-          { text: "Sin empaque (A granel), empaque compostable o sistema reutilizable/rellenable", score: 100 }
-        ]
-      },
-      {
-        q: "¿Cuál es la proximidad geográfica de la fabricación de este artículo?",
-        options: [
-          { text: "Importación transcontinental (Fabricación en masa en ultramar lejano)", score: 30 },
-          { text: "Producción continental (Países vecinos o manufacturas de la misma región)", score: 70 },
-          { text: "Producción local / Artesanal o de comercio justo comunitario verificado", score: 100 }
-        ]
-      }
-    ];
+document.getElementById('btn-login').addEventListener('click', async () => {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-password').value;
+  if (!email || !pass) { toast('Campos incompletos','Completa todos los campos.',true); return; }
+  document.getElementById('btn-login').textContent = 'Cargando…';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  document.getElementById('btn-login').textContent = 'Iniciar Sesión →';
+  if (error) { toast('Error de acceso', error.message, true); return; }
+  setUser(data.user); showView('dashboard'); toast('¡Bienvenido de vuelta!');
+});
 
-    let currentQuestionIdx = 0;
-    let accumulatedQuizScore = 0;
+document.getElementById('btn-go-register').addEventListener('click', () => showView('register'));
 
-    // SISTEMA DE CONTROL DE VISTAS (SPA Single Page Application Router)
-    function showView(viewId) {
-      document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
-      document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
-      
-      const targetPanel = document.getElementById(`view-landing`);
-      const selectedPanel = document.getElementById(`view-${viewId}`);
-      
-      if (selectedPanel) {
-        selectedPanel.classList.add('active');
-      }
-      
-      const navLink = document.getElementById(`nav-${viewId}`);
-      if (navLink) navLink.classList.add('active');
+document.getElementById('btn-register').addEventListener('click', async () => {
+  const name = document.getElementById('reg-name').value.trim();
+  const occ  = document.getElementById('reg-occupation').value;
+  const email= document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-password').value;
+  if (!name||!occ||!email||!pass) { toast('Campos incompletos','Llena todos los campos.',true); return; }
+  if (pass.length < 8) { toast('Contraseña corta','Mínimo 8 caracteres.',true); return; }
+  document.getElementById('btn-register').textContent = 'Registrando…';
+  const { data, error } = await sb.auth.signUp({ email, password: pass, options: { data: { nombre: name, ocupacion: occ } } });
+  document.getElementById('btn-register').textContent = 'Crear mi cuenta →';
+  if (error) { toast('Error', error.message, true); return; }
+  setUser(data.user ?? { id:'tmp', email, user_metadata:{ nombre: name } });
+  showView('dashboard'); toast('¡Cuenta creada!', 'Bienvenido/a a MindBuy 🌿');
+});
 
-      if (viewId === 'brands') renderBrands('all');
-      if (viewId === 'history') renderHistory();
-    }
+document.getElementById('btn-logout').addEventListener('click', async () => {
+  await sb.auth.signOut(); currentUser = null; showView('login');
+});
 
-    // MANEJO DE AUTENTICACIÓN (Lógica Supabase Integrada)
-    async function handleRegister(e) {
-      e.preventDefault();
-      const email = document.getElementById('reg-email').value;
-      const password = document.getElementById('reg-password').value;
+document.getElementById('btn-dev-bypass').addEventListener('click', () => {
+  setUser({ id:'dev-001', email:'dev@mindbuy.com', user_metadata:{ nombre:'Desarrollador Demo' } });
+  showView('dashboard'); toast('Modo desarrollo', 'Sesión de prueba activa.');
+});
 
-      if (!supabase) {
-        alert("Simulación de Registro exitoso en modo Demostrativo Local.");
-        loginMockUser(email);
-        return;
-      }
+document.querySelectorAll('.nav-link').forEach(l => {
+  l.addEventListener('click', () => {
+    const v = l.dataset.view;
+    if (v === 'quiz') { showView('quiz'); initQuiz(); } else showView(v);
+  });
+});
 
-      const { data, error } = await supabase.auth.signUp({ email, password });
-      if (error) {
-        alert("Error al registrarse: " + error.message);
-      } else {
-        alert("¡Cuenta creada exitosamente! Revisa tu bandeja de entrada si se requiere confirmación.");
-        if (data?.user) loginMockUser(email);
-      }
-    }
+function buildFactDots() {
+  const d = document.getElementById('fact-dots'); d.innerHTML = '';
+  for (let i=0; i<FACT_COUNT; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'fact-dot' + (i===0?' active':'');
+    dot.addEventListener('click', () => goFact(i));
+    d.appendChild(dot);
+  }
+}
+function goFact(n) {
+  factSlide = (n+FACT_COUNT) % FACT_COUNT;
+  document.getElementById('fact-slides').style.transform = `translateX(-${factSlide*100}%)`;
+  document.querySelectorAll('.fact-dot').forEach((d,i) => d.classList.toggle('active', i===factSlide));
+}
+document.getElementById('fact-prev').addEventListener('click', () => goFact(factSlide-1));
+document.getElementById('fact-next').addEventListener('click', () => goFact(factSlide+1));
+setInterval(() => goFact(factSlide+1), 5500);
 
-    async function handleLogin(e) {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value;
-      const password = document.getElementById('login-password').value;
+function initQuiz() { currentQuestion=0; quizAnswers={}; renderQuestion(); }
 
-      if (!supabase) {
-        alert("Simulación de Acceso exitoso en modo Demostrativo Local.");
-        loginMockUser(email);
-        return;
-      }
+function renderQuestion() {
+  const q = questions[currentQuestion], total = questions.length;
+  document.getElementById('quiz-step').textContent = `Pregunta ${currentQuestion+1} de ${total}`;
+  document.getElementById('quiz-progress').style.width = `${Math.round((currentQuestion/total)*100)+8}%`;
+  document.getElementById('quiz-prev').style.visibility = currentQuestion>0?'visible':'hidden';
+  document.getElementById('quiz-next').textContent = currentQuestion===total-1?'Ver resultados →':'Siguiente →';
+  document.getElementById('quiz-question-container').innerHTML = `
+    <div class="question-card">
+      <p class="q-category">${q.cat}</p>
+      <h2 class="q-text">${q.text}</h2>
+      <div class="options-grid">
+        ${q.opts.map((opt,i) => `
+          <button class="option-btn ${quizAnswers[q.id]===String(i)?'selected':''}"
+            onclick="selectOption('${q.id}',${i},this)">
+            <div class="option-radio"></div><span>${opt}</span>
+          </button>`).join('')}
+      </div>
+    </div>`;
+}
 
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        alert("Error de autenticación: " + error.message);
-      } else {
-        loginMockUser(data.user.email);
-      }
-    }
+function selectOption(qid, idx, btn) {
+  quizAnswers[qid] = String(idx);
+  btn.closest('.options-grid').querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
 
-    function loginMockUser(email) {
-      currentUser = { email };
-      document.getElementById('welcome-user').innerText = `¡Hola de nuevo, ${email.split('@')[0]}!`;
-      document.getElementById('main-nav').style.display = 'flex';
-      
-      // Update Navbar actions to Logout
-      document.getElementById('nav-actions').innerHTML = `
-        <span style="font-size:0.9rem; color:var(--gray-text); font-weight:500;">${email}</span>
-        <button class="btn btn-secondary" onclick="handleLogout()">Salir</button>
-      `;
-      
-      updatePointsUI();
-      showView('home');
-    }
+function quizNext() {
+  if (quizAnswers[questions[currentQuestion].id]===undefined) { toast('Selecciona una opción','',true); return; }
+  if (currentQuestion < questions.length-1) { currentQuestion++; renderQuestion(); } else showResults();
+}
+function quizPrev() { if (currentQuestion>0) { currentQuestion--; renderQuestion(); } }
 
-    function handleLogout() {
-      currentUser = null;
-      document.getElementById('main-nav').style.display = 'none';
-      document.getElementById('nav-actions').innerHTML = `
-        <button class="btn btn-secondary" onclick="showView('login')">Iniciar Sesión</button>
-        <button class="btn btn-primary" onclick="showView('register')">Registrarse</button>
-      `;
-      showView('landing');
-    }
+function showResults() {
+  const catScores = {};
+  questions.forEach(q => {
+    const s = scores[parseInt(quizAnswers[q.id]??3)];
+    if (!catScores[q.cat]) catScores[q.cat] = [];
+    catScores[q.cat].push(s);
+  });
+  const catAvg = {};
+  Object.entries(catScores).forEach(([cat,vals]) => { catAvg[cat] = Math.round((vals.reduce((a,b)=>a+b,0)/vals.length)*33.3); });
+  const total = Math.round(Object.values(catAvg).reduce((a,b)=>a+b,0)/Object.keys(catAvg).length);
 
-    // INTERFAZ DE PUNTOS
-    function updatePointsUI() {
-      document.getElementById('dash-points').innerText = userPoints.toLocaleString();
-      document.getElementById('rewards-balance').innerText = userPoints.toLocaleString();
-    }
+  let title, desc;
+  if (total>=80)      { title='Consumidor Consciente 🌿'; desc='Tienes un perfil ejemplar de consumo responsable. Tu conciencia sobre el impacto de tus compras es notablemente alta.'; }
+  else if (total>=60) { title='Consumidor en Transición 🌱'; desc='Tienes buenos instintos y ya practicas varios hábitos sostenibles. Estás muy cerca de alcanzar un perfil de consumo consciente pleno.'; }
+  else if (total>=40) { title='Consumidor en Aprendizaje 🌿'; desc='Tienes conciencia del problema pero aún hay patrones que vale la pena revisar. ¡MindBuy está aquí para guiarte!'; }
+  else                { title='Consumidor Impulsivo 🔴'; desc='Tu perfil muestra un consumo mayormente reactivo. No te preocupes: reconocerlo es el primer paso hacia el cambio real.'; }
 
-    // INTERACTIVIDAD DE SISTEMA QUIZ / EVALUACIÓN
-    function initQuiz() {
-      currentQuestionIdx = 0;
-      accumulatedQuizScore = 0;
-      renderQuizQuestion();
-    }
+  document.getElementById('result-score').textContent = total;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-desc').textContent = desc;
 
-    function renderQuizQuestion() {
-      const progress = ((currentQuestionIdx) / QUIZ_QUESTIONS.length) * 100;
-      document.getElementById('quiz-progress').style.width = `${progress}%`;
+  document.getElementById('result-bars').innerHTML = Object.entries(catAvg).map(([cat,pct]) => `
+    <div class="result-bar-item">
+      <div class="result-bar-label"><span>${cat}</span><span>${pct}%</span></div>
+      <div class="result-bar-track"><div class="result-bar-fill" style="width:0%" data-pct="${pct}"></div></div>
+    </div>`).join('');
 
-      const contentBox = document.getElementById('quiz-card-content');
+  document.getElementById('result-strengths').innerHTML = Object.entries(catAvg).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([cat,pct]) => `
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--stone)">
+      <div style="width:32px;height:32px;border-radius:8px;background:var(--sage-pale);display:flex;align-items:center;justify-content:center">🏆</div>
+      <div><p style="font-weight:600;font-size:.86rem">${cat}</p><p style="font-size:.76rem;color:var(--ink3)">${pct}% de consciencia</p></div>
+    </div>`).join('');
 
-      if (currentQuestionIdx >= QUIZ_QUESTIONS.length) {
-        // Fin del Quiz: Calcular promedio final de sostenibilidad
-        const finalScore = Math.round(accumulatedQuizScore / QUIZ_QUESTIONS.length);
-        userPoints += 150; // Recompensa de puntos fijos por realizar evaluación
-        
-        quizHistory.unshift({
-          id: Date.now(),
-          title: 'Nueva Compra Evaluada',
-          date: new Date().toLocaleDateString('es-ES', { month: 'long', day: 'numeric', year: 'numeric' }),
-          score: finalScore
-        });
+  document.getElementById('result-steps').innerHTML = [
+    { icon:'🛍️', text:'Antes de comprar, espera 48 horas para evitar compras impulsivas.' },
+    { icon:'♻️', text:'Explora ThredUp o Vinted antes de comprar nuevo.' },
+    { icon:'📊', text:'Registra tus gastos mensuales de compras online en el tracker.' },
+    { icon:'🌿', text:'Conoce 3 marcas sostenibles en tu categoría favorita.' },
+  ].map(s => `
+    <div style="display:flex;align-items:flex-start;gap:12px">
+      <div style="width:34px;height:34px;border-radius:8px;background:var(--stone2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">${s.icon}</div>
+      <p style="font-size:.87rem;color:var(--ink2);line-height:1.65;padding-top:6px">${s.text}</p>
+    </div>`).join('');
 
-        contentBox.innerHTML = `
-          <div class="text-center">
-            <span style="font-size:4rem;">📊</span>
-            <h3 style="font-family:var(--font-serif); font-size:2rem; color:var(--sage-dark); margin:1rem 0;">¡Análisis Completado!</h3>
-            <p style="color:var(--gray-text); margin-bottom:1.5rem;">Este producto ha obtenido una calificación de sostenibilidad global de:</p>
-            <p style="font-size:4rem; font-weight:700; color:${finalScore > 70 ? 'var(--sage)' : 'var(--charcoal)'}; line-height:1; margin-bottom:1rem;">${finalScore}<span style="font-size:1.2rem; color:var(--gray-text); font-weight:400;">/100 pts</span></p>
-            <p style="font-size:0.95rem; background:var(--sage-light); color:var(--sage-dark); padding:0.75rem; border-radius:8px; display:inline-block; margin-bottom:2rem;">🎉 ¡Has ganado +150 Eco-Puntos por esta acción consciente!</p>
-            <div>
-              <button class="btn btn-primary" onclick="showView('home'); updatePointsUI();">Ir al Tablero Principal</button>
-            </div>
-          </div>
-        `;
-        document.getElementById('quiz-progress').style.width = `100%`;
-        return;
-      }
+  showView('results');
+  setTimeout(() => { document.querySelectorAll('.result-bar-fill').forEach(el => { el.style.width = el.dataset.pct+'%'; }); }, 200);
 
-      const currentQ = QUIZ_QUESTIONS[currentQuestionIdx];
-      contentBox.innerHTML = `
-        <h3 class="quiz-question">${currentQ.q}</h3>
-        <div class="options-stack">
-          ${currentQ.options.map((opt, i) => `
-            <button class="option-btn" onclick="selectQuizOption(${opt.score})">${opt.text}</button>
-          `).join('')}
-        </div>
-      `;
-    }
+  quizHistory.unshift({ score:total, title, date: new Date().toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'}) });
 
-    function selectQuizOption(score) {
-      accumulatedQuizScore += score;
-      currentQuestionIdx++;
-      renderQuizQuestion();
-    }
+  if (currentUser?.id && currentUser.id!=='dev-001') {
+    sb.from('respuestas').insert({ user_id:currentUser.id, score:total, perfil:title, respuestas:quizAnswers, created_at:new Date().toISOString() })
+      .then(({error}) => { if(error) console.warn('Save error:',error); });
+  }
+}
 
-    // DINÁMICA DE LA GUÍA DE MARCAS (FILTRADO POR TABS)
-    function renderBrands(categoryFilter) {
-      const grid = document.getElementById('brands-grid');
-      const filtered = categoryFilter === 'all' ? BRANDS_DATA : BRANDS_DATA.filter(b => b.cat === categoryFilter);
+document.getElementById('btn-add-purchase').addEventListener('click', () => {
+  const product = document.getElementById('tr-product').value.trim();
+  const amount  = parseFloat(document.getElementById('tr-amount').value);
+  const type    = document.getElementById('tr-type').value;
+  if (!product||!amount||amount<=0) { toast('Datos incompletos','Completa producto y monto.',true); return; }
+  purchases.unshift({ id:Date.now(), product, amount, type, date: new Date().toLocaleDateString('es-CO',{month:'short',day:'numeric'}) });
+  renderPurchases();
+  document.getElementById('tr-product').value = '';
+  document.getElementById('tr-amount').value  = '';
+  toast('Compra registrada', `${product} — $${amount.toLocaleString('es-CO')}`);
+  if (currentUser?.id && currentUser.id!=='dev-001') {
+    sb.from('compras').insert({ user_id:currentUser.id, producto:product, monto:amount, tipo:type, created_at:new Date().toISOString() })
+      .then(({error}) => { if(error) console.warn(error); });
+  }
+});
 
-      grid.innerHTML = filtered.map(b => `
-        <div class="card brand-card">
-          <div class="brand-logo-placeholder">${b.name.substring(0,2)}</div>
-          <div class="brand-info">
-            <h4 class="brand-name">${b.name}</h4>
-            <p style="color:var(--gray-text); font-size:0.85rem; line-height:1.4;">${b.desc}</p>
-            <div class="brand-meta">
-              <span style="font-size:0.8rem; background:var(--gray-light); padding:0.15rem 0.5rem; border-radius:4px; color:var(--gray-text); text-transform:capitalize;">${b.cat}</span>
-            </div>
-            <div class="brand-score"><span class="brand-stars">${'★'.repeat(b.stars)}${ '☆'.repeat(5-b.stars) }</span><span class="brand-score-label">Índice sostenibilidad</span></div>
-          </div>
-        </div>`).join('');
-    }
+function renderPurchases() {
+  const list = document.getElementById('purchase-list');
+  list.innerHTML = purchases.length===0
+    ? `<div class="empty-state"><div class="empty-state-icon">🛒</div><p class="empty-state-title">Aún no hay compras registradas</p><p class="empty-state-sub">Registra tu primera compra arriba.</p></div>`
+    : purchases.map(p => `
+      <div class="purchase-item type-${p.type}">
+        <div class="pi-icon">${p.type==='impulsiva'?'⚡':p.type==='necesaria'?'✅':'📋'}</div>
+        <div class="pi-info"><p class="pi-name">${p.product}</p><p class="pi-meta">${p.date} · <span class="badge badge-${p.type==='impulsiva'?'amber':'sage'}">${p.type}</span></p></div>
+        <div class="pi-amount">$${p.amount.toLocaleString('es-CO')}</div>
+        <button class="pi-del" onclick="deletePurchase(${p.id})">✕</button>
+      </div>`).join('');
+  const total = purchases.reduce((a,b)=>a+b.amount,0);
+  document.getElementById('ts-total').textContent     = `$${total.toLocaleString('es-CO')}`;
+  document.getElementById('ts-impulsiva').textContent = purchases.filter(p=>p.type==='impulsiva').length;
+  document.getElementById('ts-count').textContent     = purchases.length;
+}
 
-    document.getElementById('guide-tabs').addEventListener('click', e => {
-      const btn = e.target.closest('.category-tab'); if (!btn) return;
-      document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
-      renderBrands(btn.dataset.cat);
-    });
+function deletePurchase(id) { purchases = purchases.filter(p=>p.id!==id); renderPurchases(); }
 
-    // DINÁMICA DEL HISTORIAL
-    function renderHistory() {
-      const list = document.getElementById('history-list');
-      list.innerHTML = quizHistory.length === 0
-        ? `<div class=\"empty-state\"><div class=\"empty-state-icon\">📊</div><p class=\"empty-state-title\">Aún no tienes evaluaciones</p><p class=\"empty-state-sub\">Completa el quiz por primera vez para ver tu historial aquí.</p><button class=\"btn btn-primary mt-6\" onclick=\"showView('quiz');initQuiz()\">Hacer mi primera evaluación →</button></div>`
-        : quizHistory.map(entry => `
-          <div class="history-item">
-            <div class="history-score-badge"><span class="hs-num">${entry.score}</span></div>
-            <div class="hi-info"><p class="hi-title">${entry.title}</p><p class="hi-date">${entry.date}</p></div>
-          </div>
-        `).join('');
-    }
+document.getElementById('btn-add-goal').addEventListener('click', () => {
+  const title    = document.getElementById('goal-title').value.trim();
+  const category = document.getElementById('goal-category').value;
+  const desc     = document.getElementById('goal-desc').value.trim();
+  if (!title) { toast('Falta el título','',true); return; }
+  const id = 'g'+Date.now();
+  const card = document.createElement('div');
+  card.className = 'goal-card'; card.dataset.id = id;
+  card.innerHTML = `
+    <div class="goal-header"><div><p class="goal-title">${getCatEmoji(category)} ${title}</p><p class="goal-desc">${desc||'Sin descripción adicional.'}</p></div><span class="goal-status status-active">Activa</span></div>
+    <div class="progress"><div class="progress-fill" style="width:0%"></div></div>
+    <div class="goal-footer"><span class="goal-pct">0% completado</span><button class="btn btn-sm btn-outline" onclick="toggleGoal(this,'${id}')">Marcar como lograda</button></div>`;
+  document.getElementById('goals-list').prepend(card);
+  document.getElementById('goal-title').value = '';
+  document.getElementById('goal-desc').value  = '';
+  toast('Meta creada', title);
+  if (currentUser?.id && currentUser.id!=='dev-001') {
+    sb.from('metas').insert({ user_id:currentUser.id, titulo:title, descripcion:desc, categoria:category, progreso:0, created_at:new Date().toISOString() })
+      .then(({error}) => { if(error) console.warn(error); });
+  }
+});
 
-    // MANEJO DE TIENDA DE RECOMPENSAS
-    function claimReward(rewardName, cost) {
-      if (userPoints < cost) {
-        alert("Lo sentimos, no posees suficientes Eco-Puntos para este beneficio.");
-        return;
-      }
-      userPoints -= cost;
-      updatePointsUI();
-      alert(`¡Felicidades! Has canjeado con éxito la recompensa: ${rewardName}. Revisa tu correo electrónico para obtener el código o certificado.`);
-    }
+function getCatEmoji(cat) { return {consumo:'🛍️',presupuesto:'💰',sostenibilidad:'🌿',habitos:'🧠'}[cat]||'🎯'; }
 
-    // Inicialización del estado de autenticación básico
-    handleLogout();
-  </script>
+function toggleGoal(btn, id) {
+  const card = document.querySelector(`.goal-card[data-id="${id}"]`);
+  if (!card) return;
+  const fill=card.querySelector('.progress-fill'), pctEl=card.querySelector('.goal-pct'), status=card.querySelector('.goal-status');
+  if (fill.style.width==='100%') {
+    fill.style.width='0%'; pctEl.textContent='0% completado';
+    status.className='goal-status status-active'; status.textContent='Activa'; btn.textContent='Marcar como lograda';
+  } else {
+    fill.style.width='100%'; pctEl.textContent='100% — ¡Lograda! 🎉';
+    status.className='goal-status status-done'; status.textContent='✓ Lograda'; btn.textContent='Reactivar';
+    toast('¡Meta lograda! 🎉','Excelente trabajo.');
+  }
+}
+
+function renderBrands(cat) {
+  const filtered = cat==='all' ? brands : brands.filter(b=>b.cat===cat);
+  document.getElementById('brands-grid').innerHTML = filtered.map(b => `
+    <div class="brand-card">
+      <div class="brand-card-top"><div class="brand-icon">${b.icon}</div><div><p class="brand-name">${b.name}</p><p class="brand-tagline">${b.tagline}</p></div></div>
+      <div class="brand-card-body">
+        <p class="brand-desc">${b.desc}</p>
+        <div class="brand-badges">${b.badges.map(bg=>`<span class="badge badge-sage">${bg}</span>`).join('')}</div>
+        <div class="brand-score"><span class="brand-stars">${'★'.repeat(b.stars)}${'☆'.repeat(5-b.stars)}</span><span class="brand-score-label">Índice sostenibilidad</span></div>
+      </div>
+    </div>`).join('');
+}
+
+document.getElementById('guide-tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.category-tab'); if (!btn) return;
+  document.querySelectorAll('.category-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active'); renderBrands(btn.dataset.cat);
+});
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  list.innerHTML = quizHistory.length===0
+    ? `<div class="empty-state"><div class="empty-state-icon">📊</div><p class="empty-state-title">Aún no tienes evaluaciones</p><p class="empty-state-sub">Completa el quiz por primera vez para ver tu historial aquí.</p><button class="btn btn-primary mt-6" onclick="showView('quiz');initQuiz()">Hacer mi primera evaluación →</button></div>`
+    : quizHistory.map(entry => `
+      <div class="history-item">
+        <div class="history-score-badge"><span class="hs-num">${entry.score}</span></div>
+        <div class="hi-info"><p class="hi-title">${entry.title}</p><p class="hi-date">${entry.date}</p></div>
+        <span class="hi-retake" onclick="showView('quiz');initQuiz()">Repetir →</span>
+      </div>`).join('');
+}
+
+window.addEventListener('DOMContentLoaded', () => { buildFactDots(); initAuth(); });
+</script>
 </body>
 </html>
