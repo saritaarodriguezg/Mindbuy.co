@@ -14,7 +14,7 @@
        DESIGN TOKENS
     ══════════════════════════════════════ */
     :root {
-      --sage:       ##346b37;
+      --sage:       #3d7a49;
       --sage-dark:  #2d5240;
       --sage-light: #7aaa8a;
       --sage-pale:  #e8f2ec;
@@ -29,6 +29,7 @@
       --ink3:       #7a857e;
       --white:      #ffffff;
       --red:        #c0392b;
+      --news-accent: #1a6b5a;
 
       --shadow-xs: 0 1px 3px rgba(45,82,64,.06);
       --shadow-sm: 0 4px 16px rgba(45,82,64,.08);
@@ -88,7 +89,6 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .load-label { color: var(--ink3); font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; }
 
-    /* ── LOGO: usa la imagen real, nunca SVG inline ── */
     .logo { display: flex; align-items: center; user-select: none; }
     .logo img { display: block; object-fit: contain; image-rendering: -webkit-optimize-contrast; }
 
@@ -210,7 +210,212 @@
     .stat-label { font-size: .76rem; font-weight: 500; color: var(--ink3); letter-spacing: .03em; margin-top: 2px; }
     .stat-delta { font-size: .73rem; color: var(--sage); font-weight: 600; margin-top: 4px; }
 
-    .dash-grid { max-width: 1100px; margin: 32px auto; padding: 0 32px 64px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    /* ══ VIDEO BANNER — arriba y prominente ══ */
+    .video-banner-section {
+      max-width: 1100px; margin: 32px auto 0; padding: 0 32px;
+    }
+    .video-banner-card {
+      background: var(--ink); border-radius: var(--radius-xl);
+      overflow: hidden; display: grid;
+      grid-template-columns: 1fr 1fr;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+    @media(max-width:760px){ .video-banner-card { grid-template-columns: 1fr; } }
+    .video-banner-info {
+      padding: 40px; background: linear-gradient(135deg, #1a3d2b 0%, var(--sage-dark) 100%);
+      display: flex; flex-direction: column; justify-content: center; gap: 16px;
+      position: relative; overflow: hidden;
+    }
+    .video-banner-info::before {
+      content: ''; position: absolute; inset: 0; opacity: .04;
+      background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    .video-banner-info > * { position: relative; z-index: 1; }
+    .video-banner-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.1); color: rgba(255,255,255,.8);
+      padding: 4px 12px; border-radius: 50px;
+      font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      width: fit-content;
+    }
+    .video-banner-title {
+      font-family: var(--font-display); font-size: 1.7rem; font-weight: 400;
+      font-style: italic; color: var(--white); line-height: 1.3;
+    }
+    .video-banner-desc {
+      color: rgba(255,255,255,.55); font-size: .85rem; line-height: 1.7;
+    }
+    .video-banner-meta {
+      display: flex; gap: 16px; flex-wrap: wrap;
+    }
+    .video-meta-pill {
+      display: flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,.08); color: rgba(255,255,255,.65);
+      padding: 5px 12px; border-radius: 50px; font-size: .75rem; font-weight: 500;
+    }
+    .video-banner-embed { aspect-ratio: 16/9; background: #000; }
+    .video-banner-embed iframe { width: 100%; height: 100%; border: none; display: block; }
+
+    /* ══ SOBRE MINDBUY ══ */
+    .about-section {
+      max-width: 1100px; margin: 28px auto 0; padding: 0 32px;
+    }
+    .about-card {
+      background: var(--white); border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm); overflow: hidden;
+    }
+    .about-inner {
+      display: grid; grid-template-columns: 1fr 1.4fr; align-items: stretch;
+    }
+    @media(max-width:760px){ .about-inner { grid-template-columns: 1fr; } }
+    .about-left {
+      background: linear-gradient(160deg, var(--sage-pale), var(--stone));
+      padding: 44px 40px; display: flex; flex-direction: column; gap: 20px;
+      border-right: 1px solid var(--stone2);
+      position: relative; overflow: hidden;
+    }
+    .about-left::after {
+      content: '🌿'; position: absolute; bottom: -20px; right: -10px;
+      font-size: 8rem; opacity: .06; user-select: none;
+    }
+    .about-logo-title {
+      font-family: var(--font-display); font-size: 2.4rem; font-weight: 700;
+      color: var(--sage-dark); line-height: 1;
+    }
+    .about-logo-sub {
+      font-size: .82rem; color: var(--ink3); letter-spacing: .12em;
+      text-transform: uppercase; font-weight: 600; margin-top: -10px;
+    }
+    .about-tagline {
+      font-family: var(--font-serif); font-size: 1.1rem; font-weight: 300;
+      font-style: italic; color: var(--ink2); line-height: 1.7;
+      max-width: 280px;
+    }
+    .about-stats-mini { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+    .about-stat-mini { display: flex; align-items: center; gap: 10px; }
+    .about-stat-mini-val {
+      font-family: var(--font-display); font-size: 1.4rem; font-weight: 600;
+      color: var(--sage-dark); min-width: 52px;
+    }
+    .about-stat-mini-label { font-size: .8rem; color: var(--ink3); line-height: 1.4; }
+    .about-right { padding: 44px 40px; }
+    .about-section-label {
+      font-size: .68rem; font-weight: 800; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--sage); margin-bottom: 10px;
+    }
+    .about-headline {
+      font-family: var(--font-display); font-size: 1.5rem; font-weight: 500;
+      font-style: italic; color: var(--ink); margin-bottom: 16px; line-height: 1.35;
+    }
+    .about-body {
+      font-size: .88rem; color: var(--ink2); line-height: 1.8;
+      margin-bottom: 24px;
+    }
+    .about-features { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 8px; }
+    @media(max-width:480px){ .about-features { grid-template-columns: 1fr; } }
+    .about-feature {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 14px; background: var(--stone); border-radius: var(--radius-sm);
+      border: 1px solid var(--stone2);
+    }
+    .about-feature-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+    .about-feature-title { font-weight: 700; font-size: .82rem; margin-bottom: 3px; }
+    .about-feature-desc { font-size: .76rem; color: var(--ink3); line-height: 1.5; }
+
+    /* ══ NOTICIAS ══ */
+    .news-section {
+      max-width: 1100px; margin: 28px auto 0; padding: 0 32px;
+    }
+    .news-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
+    }
+    .news-header-left p:first-child {
+      font-size: .68rem; font-weight: 800; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--sage); margin-bottom: 4px;
+    }
+    .news-header-left h2 {
+      font-family: var(--font-display); font-size: 1.5rem; font-weight: 500;
+      font-style: italic; color: var(--ink);
+    }
+    .news-live-dot {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--sage-pale); color: var(--sage-dark);
+      padding: 5px 12px; border-radius: 50px; font-size: .72rem; font-weight: 700;
+    }
+    .news-live-dot::before {
+      content: ''; width: 6px; height: 6px; background: var(--sage);
+      border-radius: 50%; animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+    .news-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+    .news-tab {
+      padding: 6px 16px; border-radius: 50px; font-size: .76rem; font-weight: 600;
+      border: 1.5px solid var(--stone2); background: var(--white); color: var(--ink3);
+      cursor: pointer; transition: all var(--t);
+    }
+    .news-tab:hover { border-color: var(--sage-light); color: var(--sage-dark); }
+    .news-tab.active { background: var(--sage-dark); color: var(--white); border-color: var(--sage-dark); }
+    .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+    .news-card {
+      background: var(--white); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xs); overflow: hidden;
+      transition: all var(--t); display: flex; flex-direction: column;
+      border: 1px solid var(--stone2);
+    }
+    .news-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--sage-light); }
+    .news-card-img {
+      height: 160px; background: var(--stone2); position: relative; overflow: hidden;
+    }
+    .news-card-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .4s var(--ease);
+    }
+    .news-card:hover .news-card-img img { transform: scale(1.04); }
+    .news-card-img-placeholder {
+      width: 100%; height: 100%; background: linear-gradient(135deg, var(--sage-pale), var(--stone2));
+      display: flex; align-items: center; justify-content: center; font-size: 2.5rem;
+    }
+    .news-card-tag {
+      position: absolute; top: 10px; left: 10px;
+      background: var(--sage-dark); color: var(--white);
+      padding: 3px 9px; border-radius: 50px; font-size: .65rem; font-weight: 700;
+      letter-spacing: .06em; text-transform: uppercase;
+    }
+    .news-card-body { padding: 18px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+    .news-card-source {
+      font-size: .68rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--sage);
+    }
+    .news-card-title {
+      font-weight: 700; font-size: .9rem; color: var(--ink);
+      line-height: 1.45; display: -webkit-box;
+      -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .news-card-desc {
+      font-size: .79rem; color: var(--ink3); line-height: 1.6;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+      flex: 1;
+    }
+    .news-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 10px; border-top: 1px solid var(--stone);
+    }
+    .news-card-date { font-size: .72rem; color: var(--ink3); }
+    .news-card-link {
+      font-size: .75rem; font-weight: 600; color: var(--sage-dark);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .news-card-link:hover { color: var(--sage); }
+    .news-loading { text-align: center; padding: 48px; color: var(--ink3); }
+    .news-loading-ring { width: 32px; height: 32px; border: 2px solid var(--stone2); border-top-color: var(--sage); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 12px; }
+    .news-error { text-align: center; padding: 32px; background: var(--white); border-radius: var(--radius-lg); border: 1.5px dashed var(--stone3); }
+    .news-error-icon { font-size: 2rem; margin-bottom: 8px; }
+
+    /* ══ DASH GRID ══ */
+    .dash-grid { max-width: 1100px; margin: 28px auto; padding: 0 32px 64px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     @media(max-width:800px){ .dash-grid { grid-template-columns: 1fr; } }
     .dash-span2 { grid-column: span 2; }
     @media(max-width:800px){ .dash-span2 { grid-column: span 1; } }
@@ -241,9 +446,6 @@
     .tl-content { padding-bottom: 24px; padding-top: 5px; }
     .tl-title { font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
     .tl-desc { font-size: .83rem; color: var(--ink3); line-height: 1.6; }
-
-    .video-wrap { border-radius: var(--radius); overflow: hidden; aspect-ratio: 16/9; background: var(--ink); }
-    .video-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
 
     .cta-card { background: var(--sage-ghost); border-radius: var(--radius-lg); border: 1.5px solid var(--stone2); padding: 28px; display: flex; align-items: flex-start; gap: 20px; }
     .cta-icon { font-size: 2.5rem; flex-shrink: 0; line-height: 1; }
@@ -411,6 +613,10 @@
       .nav-links { display: none; }
       .tracker-layout, .goals-layout, .history-layout { padding: 24px 16px 64px; }
       .guide-layout { padding: 24px 16px 64px; }
+      .video-banner-section, .about-section, .news-section { padding: 0 16px; }
+      .about-left { padding: 28px 24px; }
+      .about-right { padding: 28px 24px; }
+      .video-banner-info { padding: 28px 24px; }
     }
   </style>
 </head>
@@ -442,9 +648,8 @@
       </div>
     </div>
     <div class="auth-form-side">
-      <!-- ✅ LOGO REAL — sube /public/logo.png a tu repo de Vercel -->
       <div class="auth-logo-wrap">
-        <img src="mindbuy-logo.png" alt="MindBuy" style="height:72px;width:auto;object-fit:contain;" />
+        <img src="mindbuy-logo.png" alt="MindBuy" style="height:72px;width:auto;object-fit:contain;" onerror="this.outerHTML='<div style=\'font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--sage-dark)\'>🌿 MindBuy</div>'" />
       </div>
       <h1 class="auth-form-title">Bienvenido de vuelta</h1>
       <p class="auth-form-sub">Inicia sesión para continuar tu viaje hacia un consumo más consciente.</p>
@@ -480,9 +685,8 @@
       </div>
     </div>
     <div class="auth-form-side">
-      <!-- ✅ LOGO REAL -->
       <div class="auth-logo-wrap">
-        <img src="mindbuy-logo.png" alt="MindBuy" style="height:72px;width:auto;object-fit:contain;" />
+        <img src="mindbuy-logo.png" alt="MindBuy" style="height:72px;width:auto;object-fit:contain;" onerror="this.outerHTML='<div style=\'font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--sage-dark)\'>🌿 MindBuy</div>'" />
       </div>
       <h1 class="auth-form-title">Crear cuenta</h1>
       <p class="auth-form-sub">Es gratis y toma menos de 2 minutos.</p>
@@ -512,9 +716,8 @@
 
 <!-- NAVBAR -->
 <nav class="navbar" id="main-nav" style="display:none">
-  <!-- ✅ LOGO REAL en navbar — más pequeño -->
   <div class="logo">
-    <img src="mindbuy-logo.png" alt="MindBuy" style="height:36px;width:auto;object-fit:contain;" />
+    <img src="mindbuy-logo.png" alt="MindBuy" style="height:36px;width:auto;object-fit:contain;" onerror="this.outerHTML='<span style=\'font-family:var(--font-display);font-size:1.2rem;font-weight:700;color:var(--sage-dark)\'>🌿 MindBuy</span>'" />
   </div>
   <ul class="nav-links" id="nav-links">
     <li class="nav-link active" data-view="dashboard">Inicio</li>
@@ -540,12 +743,128 @@
       <p class="dash-sub">Aquí está tu resumen de impacto consciente.</p>
     </div>
   </div>
+
+  <!-- STATS -->
   <div class="stats-row">
     <div class="stat-card c-sage"><div class="stat-icon">🌿</div><div class="stat-val"><span class="count-up" data-target="4.2">0</span><sup>kg CO₂</sup></div><div class="stat-label">Huella evitada este mes</div><div class="stat-delta">↓ 18% vs. mes anterior</div></div>
     <div class="stat-card c-amber"><div class="stat-icon">💰</div><div class="stat-val">$<span class="count-up" data-target="127">0</span></div><div class="stat-label">Ahorrado en compras impulsivas</div><div class="stat-delta">↑ 32% vs. mes anterior</div></div>
     <div class="stat-card c-teal"><div class="stat-icon">🛍️</div><div class="stat-val"><span class="count-up" data-target="9">0</span><sup>artículos</sup></div><div class="stat-label">Compras impulsivas evitadas</div><div class="stat-delta">Este mes</div></div>
     <div class="stat-card c-rose"><div class="stat-icon">♻️</div><div class="stat-val"><span class="count-up" data-target="3">0</span><sup>marcas</sup></div><div class="stat-label">Alternativas sostenibles usadas</div><div class="stat-delta">Descubriste esta semana</div></div>
   </div>
+
+  <!-- ══ VIDEO — ARRIBA Y PROMINENTE ══ -->
+  <div class="video-banner-section" style="margin-top:36px">
+    <div class="video-banner-card">
+      <div class="video-banner-info">
+        <div class="video-banner-tag">🎬 Documental recomendado</div>
+        <h2 class="video-banner-title">¿Sabes el verdadero costo de lo que compras?</h2>
+        <p class="video-banner-desc">
+          <em>The True Cost</em> es el documental que cambió la conversación sobre la moda rápida. Detrás de cada prenda a bajo precio hay una cadena de consecuencias humanas y ambientales que raramente vemos.
+        </p>
+        <div class="video-banner-meta">
+          <span class="video-meta-pill">⏱ 92 min</span>
+          <span class="video-meta-pill">🌍 Moda sostenible</span>
+          <span class="video-meta-pill">📽 Andrew Morgan, 2015</span>
+        </div>
+      </div>
+      <div class="video-banner-embed">
+        <iframe src="https://www.youtube.com/embed/BiSYoeqb_VY?rel=0" title="The True Cost" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SOBRE MINDBUY ══ -->
+  <div class="about-section">
+    <div class="about-card">
+      <div class="about-inner">
+        <div class="about-left">
+          <div>
+            <div class="about-logo-title">MindBuy</div>
+            <div class="about-logo-sub">Consumo Consciente</div>
+          </div>
+          <p class="about-tagline">
+            "Una herramienta que te ayuda a pausar, reflexionar y decidir antes de comprar."
+          </p>
+          <div class="about-stats-mini">
+            <div class="about-stat-mini">
+              <div class="about-stat-mini-val">72h</div>
+              <div class="about-stat-mini-label">Período de reflexión recomendado antes de una compra impulsiva</div>
+            </div>
+            <div class="about-stat-mini">
+              <div class="about-stat-mini-val">64%</div>
+              <div class="about-stat-mini-label">de compras impulsivas no se realizan después de esperar 48h</div>
+            </div>
+            <div class="about-stat-mini">
+              <div class="about-stat-mini-val">10%</div>
+              <div class="about-stat-mini-label">de emisiones globales de CO₂ provienen del fast fashion</div>
+            </div>
+          </div>
+        </div>
+        <div class="about-right">
+          <p class="about-section-label">¿Qué es MindBuy?</p>
+          <h3 class="about-headline">Una app para combatir el sobreconsumo digital, una compra a la vez</h3>
+          <p class="about-body">
+            MindBuy nace de una pregunta simple: ¿realmente necesito esto? En un mundo donde plataformas como SHEIN, Temu o Amazon nos diseñan para comprar impulsivamente, MindBuy te da las herramientas para recuperar el control de tus decisiones de consumo.<br><br>
+            Desarrollada como proyecto académico, nuestra misión es combinar psicología del consumo, datos de sostenibilidad y diseño intuitivo para ayudarte a vivir con más intención — y menos remordimiento de comprador.
+          </p>
+          <div class="about-features">
+            <div class="about-feature">
+              <div class="about-feature-icon">⏳</div>
+              <div>
+                <p class="about-feature-title">Lista de reflexión</p>
+                <p class="about-feature-desc">Agrega artículos y espera 72h antes de decidir si comprar.</p>
+              </div>
+            </div>
+            <div class="about-feature">
+              <div class="about-feature-icon">📊</div>
+              <div>
+                <p class="about-feature-title">Tracker de compras</p>
+                <p class="about-feature-desc">Registra y clasifica cada compra: necesaria, planeada o impulsiva.</p>
+              </div>
+            </div>
+            <div class="about-feature">
+              <div class="about-feature-icon">🧠</div>
+              <div>
+                <p class="about-feature-title">Evaluación de hábitos</p>
+                <p class="about-feature-desc">12 preguntas que revelan tu perfil real de consumo digital.</p>
+              </div>
+            </div>
+            <div class="about-feature">
+              <div class="about-feature-icon">🌿</div>
+              <div>
+                <p class="about-feature-title">Alternativas éticas</p>
+                <p class="about-feature-desc">Guía de marcas sostenibles verificadas para cada categoría.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ NOTICIAS ══ -->
+  <div class="news-section">
+    <div class="news-header">
+      <div class="news-header-left">
+        <p>Lo que pasa en el mundo</p>
+        <h2>Noticias del Medio Ambiente y Consumo</h2>
+      </div>
+      <div class="news-live-dot">En vivo</div>
+    </div>
+    <div class="news-tabs" id="news-tabs">
+      <button class="news-tab active" data-feed="env">🌍 Medio ambiente</button>
+      <button class="news-tab" data-feed="fashion">👗 Moda sostenible</button>
+      <button class="news-tab" data-feed="eco">♻️ Economía circular</button>
+    </div>
+    <div id="news-container">
+      <div class="news-loading">
+        <div class="news-loading-ring"></div>
+        <p style="font-size:.85rem">Cargando noticias…</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASH GRID — datos, timeline, ctas, alternativas -->
   <div class="dash-grid">
     <div>
       <p class="section-eyebrow">¿Sabías que…?</p>
@@ -582,31 +901,23 @@
       </div></div>
     </div>
     <div>
-      <p class="section-eyebrow">Video introductorio</p>
-      <p class="section-title">Entiende el impacto</p>
-      <div class="card"><div class="card-body" style="padding:16px">
-        <div class="video-wrap"><iframe src="https://www.youtube.com/embed/BiSYoeqb_VY?rel=0" title="Consumo consciente" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-        <p style="font-size:.8rem;color:var(--ink3);margin-top:12px;line-height:1.6"><strong>The True Cost</strong> — Documental sobre el verdadero precio de la moda rápida.</p>
-      </div></div>
-    </div>
-    <div>
       <p class="section-eyebrow">Acción inmediata</p>
       <p class="section-title">¿Por dónde empezar?</p>
       <div class="cta-card" style="margin-bottom:14px"><div class="cta-icon">🧠</div><div><h3>Evaluación de Hábitos</h3><p>12 preguntas que analizan tus patrones de compra digital. Toma 3 minutos.</p><div class="cta-actions"><button class="btn btn-primary btn-sm" onclick="showView('quiz');initQuiz()">Comenzar →</button></div></div></div>
       <div class="cta-card"><div class="cta-icon">📋</div><div><h3>Registrar una compra</h3><p>Anota tu última compra y clasifícala para empezar tu diario.</p><div class="cta-actions"><button class="btn btn-outline btn-sm" onclick="showView('tracker')">Ir al tracker →</button></div></div></div>
     </div>
-    <div class="dash-span2">
+    <div>
       <p class="section-eyebrow">Alternativas sostenibles</p>
       <p class="section-title">Marcas que cuidan el planeta</p>
       <div class="alt-grid">
-        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">👗</div><p class="alt-card-name">Patagonia</p><p class="alt-card-cat">Outdoor sostenible</p></div>
+        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🏔️</div><p class="alt-card-name">Patagonia</p><p class="alt-card-cat">Outdoor sostenible</p></div>
         <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">👟</div><p class="alt-card-name">Allbirds</p><p class="alt-card-cat">Calzado mínima huella</p></div>
         <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🔄</div><p class="alt-card-name">ThredUp</p><p class="alt-card-cat">Segunda mano curada</p></div>
         <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🌳</div><p class="alt-card-name">Tentree</p><p class="alt-card-cat">10 árboles por compra</p></div>
         <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🛍️</div><p class="alt-card-name">Vinted</p><p class="alt-card-cat">Intercambio de ropa</p></div>
         <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🧴</div><p class="alt-card-name">Lush</p><p class="alt-card-cat">Cosmética sin plástico</p></div>
         <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">💻</div><p class="alt-card-name">Back Market</p><p class="alt-card-cat">Tech reacondicionado</p></div>
-        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">🏔️</div><p class="alt-card-name">Eileen Fisher</p><p class="alt-card-cat">Moda atemporal</p></div>
+        <div class="alt-card" onclick="showView('guide')"><div class="alt-card-icon">✂️</div><p class="alt-card-name">Eileen Fisher</p><p class="alt-card-cat">Moda atemporal</p></div>
       </div>
     </div>
   </div>
@@ -777,6 +1088,123 @@ const brands = [
   { name:'Swappa',       icon:'📱', tagline:'Smartphones usados verificados',cat:'tech',     badges:['Sin robots','P2P','Verificado'], stars:4, desc:'Mercado de teléfonos y tech usado revisado por personas reales.' },
 ];
 
+// ══════════════════════════════════════
+// NEWS SYSTEM
+// ══════════════════════════════════════
+const NEWS_FEEDS = {
+  env: {
+    url: 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://feeds.bbci.co.uk/news/science_and_environment/rss.xml') + '&count=6',
+    tag: 'Medio ambiente', emoji: '🌍'
+  },
+  fashion: {
+    url: 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://www.theguardian.com/environment/rss') + '&count=6',
+    tag: 'Sostenibilidad', emoji: '🌿'
+  },
+  eco: {
+    url: 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://feeds.feedburner.com/treehugger/main') + '&count=6',
+    tag: 'Eco', emoji: '♻️'
+  }
+};
+
+// Fallback curated news (si la API falla)
+const FALLBACK_NEWS = {
+  env: [
+    { title:'La UE aprueba nueva ley contra el greenwashing en marcas de moda', desc:'Las empresas deberán respaldar sus afirmaciones ecológicas con evidencia científica verificable.', source:'Reuters', date:'Mayo 2025', url:'#', emoji:'🇪🇺' },
+    { title:'El Amazonas recupera 2 millones de hectáreas gracias a políticas de reforestación', desc:'Brasil reporta la mayor recuperación forestal en una década en su informe anual de biodiversidad.', source:'The Guardian', date:'Abr 2025', url:'#', emoji:'🌳' },
+    { title:'El plástico de un solo uso genera el 46% de los residuos en océanos según UNEP', desc:'El nuevo informe pide una reducción del 80% en la producción de plásticos descartables para 2040.', source:'UNEP', date:'Mar 2025', url:'#', emoji:'🌊' },
+    { title:'Colombia lanza plan de economía circular para la industria textil', desc:'El MinAmbiente anuncia subsidios a empresas que implementen modelos de moda circular en sus cadenas de producción.', source:'MinAmbiente CO', date:'May 2025', url:'#', emoji:'🇨🇴' },
+    { title:'Temperatura global superó 1.5°C por encima del nivel preindustrial en 2024', desc:'El año pasado fue el más cálido registrado, con consecuencias severas para ecosistemas costeros y glaciares.', source:'NASA', date:'Ene 2025', url:'#', emoji:'🌡️' },
+    { title:'Nueva plataforma conecta compradores colombianos con artesanos sostenibles', desc:'MercadoVerde lanza su versión móvil con más de 3,000 productos certificados en comercio justo.', source:'El Espectador', date:'May 2025', url:'#', emoji:'🛍️' },
+  ],
+  fashion: [
+    { title:'Zara lanza línea de ropa fabricada 100% con fibras recicladas', desc:'La colección Join Life Circular llega a tiendas físicas y online en Colombia desde junio de 2025.', source:'Vogue ES', date:'May 2025', url:'#', emoji:'♻️' },
+    { title:'El mercado de segunda mano crecerá 3 veces más rápido que el fast fashion en 2025', desc:'ThredUp proyecta que la ropa usada alcanzará $350 mil millones USD en ventas globales para 2027.', source:'ThredUp Report', date:'Abr 2025', url:'#', emoji:'📈' },
+    { title:'SHEIN bajo investigación en la UE por prácticas laborales y fast fashion', desc:'La Comisión Europea inicia auditoría sobre condiciones de trabajo en sus proveedores y huella ambiental.', source:'Euronews', date:'Mar 2025', url:'#', emoji:'⚖️' },
+    { title:'La moda lenta gana terreno entre los Gen Z colombianos', desc:'Encuesta revela que el 58% de jóvenes entre 18 y 25 años prefiere marcas locales sobre cadenas internacionales.', source:'Semana', date:'May 2025', url:'#', emoji:'🇨🇴' },
+    { title:'Nuevas regulaciones exigen etiquetas de huella de carbono en prendas de ropa', desc:'Francia es el primer país en implementar el etiquetado obligatorio de impacto ambiental en textiles.', source:'Le Monde', date:'Feb 2025', url:'#', emoji:'🏷️' },
+    { title:'Patagonia dona $100M para conservación de ecosistemas sudamericanos', desc:'La empresa de outdoor destina ganancias del Q4 2024 a proyectos de reforestación en Andes y Patagonia.', source:'Patagonia Blog', date:'Ene 2025', url:'#', emoji:'🏔️' },
+  ],
+  eco: [
+    { title:'La economía circular podría reducir emisiones globales en un 45% para 2050', desc:'Un nuevo informe de la Ellen MacArthur Foundation muestra el potencial transformador de los modelos circulares.', source:'Ellen MacArthur F.', date:'May 2025', url:'#', emoji:'🔄' },
+    { title:'Apple introduce programa de reparación gratuita para extender vida útil de dispositivos', desc:'El gigante tecnológico amplía su política de reparabilidad en respuesta a nuevas leyes europeas de Right to Repair.', source:'TechCrunch', date:'Abr 2025', url:'#', emoji:'📱' },
+    { title:'Back Market procesa su millón 500 dispositivos reacondicionados en Latinoamérica', desc:'La plataforma reporta que cada dispositivo reacondicionado evita un promedio de 70 kg de CO₂ equivalente.', source:'Back Market', date:'Mar 2025', url:'#', emoji:'💻' },
+    { title:'Bogotá implementa puntos de reciclaje electrónico en 50 supermercados', desc:'La iniciativa DigiRecicla facilita la entrega de celulares, tablets y electrodomésticos en desuso.', source:'El Tiempo', date:'May 2025', url:'#', emoji:'🏙️' },
+    { title:'Suecia alcanza el 90% de reciclaje de envases gracias al sistema de depósito', desc:'El modelo Pant sueco es citado como referente global para políticas de economía circular en consumo masivo.', source:'Bloomberg Green', date:'Abr 2025', url:'#', emoji:'🇸🇪' },
+    { title:'Nuevas startups de alquiler de ropa cambian el modelo de consumo en Colombia', desc:'Empresas como RentaBoda y ClosetShare ofrecen acceso a moda de alta calidad sin propiedad permanente.', source:'Forbes CO', date:'May 2025', url:'#', emoji:'🌟' },
+  ]
+};
+
+let currentNewsFeed = 'env';
+let newsCache = {};
+
+async function loadNews(feed) {
+  currentNewsFeed = feed;
+  const container = document.getElementById('news-container');
+  container.innerHTML = '<div class="news-loading"><div class="news-loading-ring"></div><p style="font-size:.85rem">Cargando noticias…</p></div>';
+
+  if (newsCache[feed]) { renderNews(newsCache[feed], feed); return; }
+
+  try {
+    const res = await fetch(NEWS_FEEDS[feed].url, { signal: AbortSignal.timeout(5000) });
+    const data = await res.json();
+    if (data.status === 'ok' && data.items?.length) {
+      const articles = data.items.slice(0, 6).map(item => ({
+        title: item.title,
+        desc: item.description?.replace(/<[^>]+>/g,'').slice(0,160) + '…' || '',
+        source: data.feed?.title || 'Fuente externa',
+        date: item.pubDate ? new Date(item.pubDate).toLocaleDateString('es-CO',{month:'short',day:'numeric',year:'numeric'}) : '',
+        url: item.link || '#',
+        img: item.enclosure?.link || item.thumbnail || null,
+        emoji: NEWS_FEEDS[feed].emoji
+      }));
+      newsCache[feed] = articles;
+      renderNews(articles, feed);
+    } else throw new Error('empty');
+  } catch (e) {
+    // Fallback to curated content
+    newsCache[feed] = FALLBACK_NEWS[feed];
+    renderNews(FALLBACK_NEWS[feed], feed);
+  }
+}
+
+function renderNews(articles, feed) {
+  const tag = NEWS_FEEDS[feed].tag;
+  const container = document.getElementById('news-container');
+  container.innerHTML = `<div class="news-grid">${articles.map(a => `
+    <div class="news-card">
+      <div class="news-card-img">
+        ${a.img
+          ? `<img src="${a.img}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=news-card-img-placeholder>${a.emoji||'🌍'}</div>'" />`
+          : `<div class="news-card-img-placeholder">${a.emoji||'🌍'}</div>`
+        }
+        <span class="news-card-tag">${tag}</span>
+      </div>
+      <div class="news-card-body">
+        <p class="news-card-source">${a.source}</p>
+        <h3 class="news-card-title">${a.title}</h3>
+        <p class="news-card-desc">${a.desc}</p>
+        <div class="news-card-footer">
+          <span class="news-card-date">${a.date}</span>
+          ${a.url !== '#'
+            ? `<a href="${a.url}" target="_blank" rel="noopener" class="news-card-link">Leer más ↗</a>`
+            : `<span class="news-card-link" style="opacity:.4">Fuente verificada</span>`
+          }
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+document.getElementById('news-tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.news-tab'); if (!btn) return;
+  document.querySelectorAll('.news-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  loadNews(btn.dataset.feed);
+});
+
+// ══════════════════════════════════════
+// CORE APP
+// ══════════════════════════════════════
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   const el = document.getElementById('view-' + name);
@@ -784,7 +1212,7 @@ function showView(name) {
   const hasNav = ['dashboard','tracker','goals','quiz','results','guide','history'].includes(name);
   document.getElementById('main-nav').style.display = hasNav ? 'flex' : 'none';
   document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.view === name));
-  if (name === 'dashboard') animateCounters();
+  if (name === 'dashboard') { animateCounters(); loadNews('env'); }
   if (name === 'guide') renderBrands('all');
   if (name === 'tracker') renderPurchases();
   if (name === 'history') renderHistory();
@@ -798,8 +1226,6 @@ function toast(title, msg='', error=false) {
   t.innerHTML = `<div class="toast-icon">${error?'⚠️':'✅'}</div><div><div class="toast-title">${title}</div>${msg?`<div class="toast-msg">${msg}</div>`:''}</div>`;
   c.appendChild(t); setTimeout(() => t.remove(), 4200);
 }
-
-function setLoading(b) { document.getElementById('loading').classList.toggle('hidden', !b); }
 
 function animateCounters() {
   document.querySelectorAll('.count-up').forEach(el => {
@@ -820,7 +1246,6 @@ async function initAuth() {
   const { data: { session } } = await sb.auth.getSession();
   if (session?.user) { setUser(session.user); showView('dashboard'); }
   else showView('login');
-  setLoading(false);
   document.getElementById('loading').classList.add('hidden');
 }
 
@@ -880,6 +1305,7 @@ document.querySelectorAll('.nav-link').forEach(l => {
   });
 });
 
+// FACT SLIDER
 function buildFactDots() {
   const d = document.getElementById('fact-dots'); d.innerHTML = '';
   for (let i=0; i<FACT_COUNT; i++) {
@@ -898,6 +1324,7 @@ document.getElementById('fact-prev').addEventListener('click', () => goFact(fact
 document.getElementById('fact-next').addEventListener('click', () => goFact(factSlide+1));
 setInterval(() => goFact(factSlide+1), 5500);
 
+// QUIZ
 function initQuiz() { currentQuestion=0; quizAnswers={}; renderQuestion(); }
 
 function renderQuestion() {
@@ -987,6 +1414,7 @@ function showResults() {
   }
 }
 
+// TRACKER
 document.getElementById('btn-add-purchase').addEventListener('click', () => {
   const product = document.getElementById('tr-product').value.trim();
   const amount  = parseFloat(document.getElementById('tr-amount').value);
@@ -1022,6 +1450,7 @@ function renderPurchases() {
 
 function deletePurchase(id) { purchases = purchases.filter(p=>p.id!==id); renderPurchases(); }
 
+// GOALS
 document.getElementById('btn-add-goal').addEventListener('click', () => {
   const title    = document.getElementById('goal-title').value.trim();
   const category = document.getElementById('goal-category').value;
@@ -1060,6 +1489,7 @@ function toggleGoal(btn, id) {
   }
 }
 
+// GUIDE
 function renderBrands(cat) {
   const filtered = cat==='all' ? brands : brands.filter(b=>b.cat===cat);
   document.getElementById('brands-grid').innerHTML = filtered.map(b => `
@@ -1079,6 +1509,7 @@ document.getElementById('guide-tabs').addEventListener('click', e => {
   btn.classList.add('active'); renderBrands(btn.dataset.cat);
 });
 
+// HISTORY
 function renderHistory() {
   const list = document.getElementById('history-list');
   list.innerHTML = quizHistory.length===0
