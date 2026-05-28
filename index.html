@@ -652,6 +652,36 @@
 .about-gallery img:hover{
   transform:scale(1.04);
 }
+      .hero-images{
+  display:flex;
+  gap:18px;
+  margin-top:32px;
+  flex-wrap:wrap;
+}
+
+.hero-images img{
+  flex:1;
+  min-width:220px;
+  height:220px;
+  object-fit:cover;
+  border-radius:28px;
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
+  transition:.4s ease;
+}
+
+.hero-images img:hover{
+  transform:translateY(-6px) scale(1.02);
+}
+
+.about-profile{
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  object-fit:cover;
+  border:5px solid rgba(255,255,255,.7);
+  box-shadow:0 10px 25px rgba(0,0,0,.12);
+  margin-bottom:20px;
+}
     }
   </style>
 </head>
@@ -776,6 +806,15 @@
       <p class="dash-eyebrow" id="dash-time-label">Buenos días ☀️</p>
       <h1 class="dash-greeting" id="dash-greeting">Hola, Participante</h1>
       <p class="dash-sub">Aquí está tu resumen de impacto consciente.</p>
+      <div class="hero-images">
+
+  <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1200&auto=format&fit=crop">
+
+  <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop">
+
+  <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=1200&auto=format&fit=crop">
+
+</div>
     </div>
   </div>
 
@@ -807,6 +846,13 @@
 
       <!-- IZQUIERDA -->
       <div class="about-left">
+
+  <!-- FOTO PERSONAL -->
+  <img 
+    src="TU-FOTO.jpg"
+    alt="Sarah Guerra"
+    class="about-profile"
+  >
 
         <!-- Imagen principal -->
         <img 
