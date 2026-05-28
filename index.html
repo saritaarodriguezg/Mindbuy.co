@@ -617,6 +617,41 @@
       .about-left { padding: 28px 24px; }
       .about-right { padding: 28px 24px; }
       .video-banner-info { padding: 28px 24px; }
+      .about-main-image{
+  width:100%;
+  height:260px;
+  object-fit:cover;
+  border-radius:22px;
+  margin-bottom:22px;
+  box-shadow: var(--shadow-sm);
+}
+
+.about-side-image{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  border-radius:20px;
+  margin-bottom:22px;
+  box-shadow: var(--shadow-sm);
+}
+
+.about-gallery{
+  display:flex;
+  gap:12px;
+  margin:22px 0;
+}
+
+.about-gallery img{
+  width:33.3%;
+  height:110px;
+  object-fit:cover;
+  border-radius:16px;
+  transition:0.3s ease;
+}
+
+.about-gallery img:hover{
+  transform:scale(1.04);
+}
     }
   </style>
 </head>
@@ -766,73 +801,137 @@
   </div>
 
   <!-- ══ SOBRE MINDBUY ══ -->
-  <div class="about-section">
-    <div class="about-card">
-      <div class="about-inner">
-        <div class="about-left">
-          <div>
-            <div class="about-logo-title">MindBuy</div>
-            <div class="about-logo-sub">Consumo Consciente</div>
-          </div>
-          <p class="about-tagline">
-            "Una herramienta que te ayuda a pausar, reflexionar y decidir antes de comprar."
-          </p>
-          <div class="about-stats-mini">
-            <div class="about-stat-mini">
-              <div class="about-stat-mini-val">72h</div>
-              <div class="about-stat-mini-label">Período de reflexión recomendado antes de una compra impulsiva</div>
-            </div>
-            <div class="about-stat-mini">
-              <div class="about-stat-mini-val">64%</div>
-              <div class="about-stat-mini-label">de compras impulsivas no se realizan después de esperar 48h</div>
-            </div>
-            <div class="about-stat-mini">
-              <div class="about-stat-mini-val">10%</div>
-              <div class="about-stat-mini-label">de emisiones globales de CO₂ provienen del fast fashion</div>
-            </div>
-          </div>
+<div class="about-section">
+  <div class="about-card">
+    <div class="about-inner">
+
+      <!-- IZQUIERDA -->
+      <div class="about-left">
+
+        <!-- Imagen principal -->
+        <img 
+          src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop"
+          alt="MindBuy consumo consciente"
+          class="about-main-image"
+        >
+
+        <div>
+          <div class="about-logo-title">MindBuy</div>
+          <div class="about-logo-sub">Consumo Consciente</div>
         </div>
-        <div class="about-right">
-          <p class="about-section-label">¿Qué es MindBuy?</p>
-          <h3 class="about-headline">Una app para combatir el sobreconsumo digital, una compra a la vez</h3>
-          <p class="about-body">
-            MindBuy nace de una pregunta simple: ¿Realmente necesito esto? En un mundo donde plataformas como Shein y Temu o  nos diseñan para comprar impulsivamente, MindBuy te da las herramientas para recuperar el control de tus decisiones de consumo.<br><br>
-            Desarrollada como proyecto académico, nuestra misión es combinar psicología del consumo, datos de sostenibilidad y diseño intuitivo para ayudarte a vivir con más intención — y menos remordimiento de comprador.
-          </p>
-          <div class="about-features">
-            <div class="about-feature">
-              <div class="about-feature-icon">⏳</div>
-              <div>
-                <p class="about-feature-title">Lista de reflexión</p>
-                <p class="about-feature-desc">Agrega artículos y espera 72h antes de decidir si comprar.</p>
-              </div>
-            </div>
-            <div class="about-feature">
-              <div class="about-feature-icon">📊</div>
-              <div>
-                <p class="about-feature-title">Tracker de compras</p>
-                <p class="about-feature-desc">Registra y clasifica cada compra: necesaria, planeada o impulsiva.</p>
-              </div>
-            </div>
-            <div class="about-feature">
-              <div class="about-feature-icon">🧠</div>
-              <div>
-                <p class="about-feature-title">Evaluación de hábitos</p>
-                <p class="about-feature-desc">12 preguntas que revelan tu perfil real de consumo digital.</p>
-              </div>
-            </div>
-            <div class="about-feature">
-              <div class="about-feature-icon">🌿</div>
-              <div>
-                <p class="about-feature-title">Alternativas éticas</p>
-                <p class="about-feature-desc">Guía de marcas sostenibles verificadas para cada categoría.</p>
-              </div>
+
+        <p class="about-tagline">
+          "Una herramienta que te ayuda a pausar, reflexionar y decidir antes de comprar."
+        </p>
+
+        <!-- Mini galería -->
+        <div class="about-gallery">
+          <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop" alt="">
+          <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format&fit=crop" alt="">
+          <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop" alt="">
+        </div>
+
+        <div class="about-stats-mini">
+
+          <div class="about-stat-mini">
+            <div class="about-stat-mini-val">72h</div>
+            <div class="about-stat-mini-label">
+              Período de reflexión recomendado antes de una compra impulsiva
             </div>
           </div>
+
+          <div class="about-stat-mini">
+            <div class="about-stat-mini-val">64%</div>
+            <div class="about-stat-mini-label">
+              de compras impulsivas no se realizan después de esperar 48h
+            </div>
+          </div>
+
+          <div class="about-stat-mini">
+            <div class="about-stat-mini-val">10%</div>
+            <div class="about-stat-mini-label">
+              de emisiones globales de CO₂ provienen del fast fashion
+            </div>
+          </div>
+
         </div>
       </div>
+
+      <!-- DERECHA -->
+      <div class="about-right">
+
+        <!-- Imagen decorativa -->
+        <img 
+          src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop"
+          alt="Moda sostenible"
+          class="about-side-image"
+        >
+
+        <p class="about-section-label">¿Qué es MindBuy?</p>
+
+        <h3 class="about-headline">
+          Una app para combatir el sobreconsumo digital, una compra a la vez
+        </h3>
+
+        <p class="about-body">
+          MindBuy nace de una pregunta simple: ¿Realmente necesito esto? En un
+          mundo donde plataformas como Shein y Temu nos diseñan para comprar
+          impulsivamente, MindBuy te da las herramientas para recuperar el control
+          de tus decisiones de consumo.
+          <br><br>
+          Desarrollada como proyecto académico, nuestra misión es combinar
+          psicología del consumo, datos de sostenibilidad y diseño intuitivo
+          para ayudarte a vivir con más intención y menos remordimiento de comprador.
+        </p>
+
+        <div class="about-features">
+
+          <div class="about-feature">
+            <div class="about-feature-icon">⏳</div>
+            <div>
+              <p class="about-feature-title">Lista de reflexión</p>
+              <p class="about-feature-desc">
+                Agrega artículos y espera 72h antes de decidir si comprar.
+              </p>
+            </div>
+          </div>
+
+          <div class="about-feature">
+            <div class="about-feature-icon">📊</div>
+            <div>
+              <p class="about-feature-title">Tracker de compras</p>
+              <p class="about-feature-desc">
+                Registra y clasifica cada compra: necesaria, planeada o impulsiva.
+              </p>
+            </div>
+          </div>
+
+          <div class="about-feature">
+            <div class="about-feature-icon">🧠</div>
+            <div>
+              <p class="about-feature-title">Evaluación de hábitos</p>
+              <p class="about-feature-desc">
+                12 preguntas que revelan tu perfil real de consumo digital.
+              </p>
+            </div>
+          </div>
+
+          <div class="about-feature">
+            <div class="about-feature-icon">🌿</div>
+            <div>
+              <p class="about-feature-title">Alternativas éticas</p>
+              <p class="about-feature-desc">
+                Guía de marcas sostenibles verificadas para cada categoría.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   </div>
+</div>
 
   <!-- ══ NOTICIAS ══ -->
   <div class="news-section">
