@@ -209,6 +209,46 @@
     .stat-val sup { font-size: .85rem; font-weight: 400; color: var(--ink3); margin-left: 2px; vertical-align: super; }
     .stat-label { font-size: .76rem; font-weight: 500; color: var(--ink3); letter-spacing: .03em; margin-top: 2px; }
     .stat-delta { font-size: .73rem; color: var(--sage); font-weight: 600; margin-top: 4px; }
+    /* ═══════════════════════════
+   HORIZONTAL SCROLL HERO
+   (from Crepes & Waffles)
+═══════════════════════════ */
+#view-dashboard{display:none;background:var(--cream)}
+#view-dashboard.active{display:block}
+
+.horizontal-hero-wrap{position:relative;height:calc(100vh - var(--nav-h));overflow:hidden;background:var(--ink)}
+
+/* FIXED BAND LABELS — right side (Crepes & Waffles style) */
+.bands-fixed{position:absolute;right:0;top:0;bottom:0;z-index:40;display:flex;pointer-events:none}
+.band-label{width:var(--band-w);background:rgba(250,248,243,.96);border-left:1px solid var(--cream3);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:56px;transition:background .4s}
+.band-label span{font-family:var(--font-mono);font-size:10px;font-weight:400;letter-spacing:.35em;text-transform:uppercase;color:var(--ink3);white-space:nowrap;writing-mode:vertical-rl;transform:rotate(180deg);transition:color .4s}
+.band-label.active-band{background:var(--sage-ghost)}
+.band-label.active-band span{color:var(--moss)}
+
+/* SCROLLABLE PANELS */
+.horizontal-panels{display:flex;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;transition:scroll .6s var(--ease)}
+.horizontal-panels::-webkit-scrollbar{display:none}
+
+.h-panel{flex:0 0 calc(100vw - 290px);height:100%;scroll-snap-align:start;position:relative;overflow:hidden;display:flex}
+.h-panel-img{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;transition:transform .8s var(--ease)}
+.h-panel:hover .h-panel-img{transform:scale(1.03)}
+.h-panel-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(26,28,24,.6) 0%,rgba(26,28,24,.1) 60%,transparent 100%)}
+
+.h-panel-content{position:relative;z-index:2;padding:56px 48px;display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.h-panel-eyebrow{font-family:var(--font-mono);font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:12px;opacity:0;transform:translateY(20px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.h-panel-title{font-family:var(--font-disp);font-size:5rem;font-weight:300;font-style:italic;color:rgba(255,255,255,.95);line-height:.95;letter-spacing:-.02em;opacity:0;transform:translateY(30px);transition:opacity .55s .05s var(--ease),transform .55s .05s var(--ease)}
+.h-panel-desc{color:rgba(255,255,255,.6);font-size:.88rem;line-height:1.75;max-width:340px;margin-top:16px;opacity:0;transform:translateY(20px);transition:opacity .5s .1s var(--ease),transform .5s .1s var(--ease)}
+.h-panel-cta{display:inline-flex;align-items:center;gap:8px;margin-top:22px;padding:10px 20px;border:1px solid rgba(255,255,255,.35);border-radius:50px;color:rgba(255,255,255,.8);font-size:.76rem;font-weight:500;letter-spacing:.06em;cursor:pointer;transition:all .3s;opacity:0;transform:translateY(16px);transition:opacity .5s .15s var(--ease),transform .5s .15s var(--ease),background .3s,border-color .3s}
+.h-panel-cta:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.6);color:var(--white)}
+.h-panel.in-view .h-panel-eyebrow,
+.h-panel.in-view .h-panel-title,
+.h-panel.in-view .h-panel-desc,
+.h-panel.in-view .h-panel-cta{opacity:1;transform:none}
+
+/* SCROLL INDICATOR */
+.scroll-indicator{position:absolute;bottom:28px;left:calc(50% - 145px);transform:translateX(-50%);display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.45);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-family:var(--font-mono);z-index:50}
+.scroll-track{width:80px;height:1px;background:rgba(255,255,255,.2);position:relative;overflow:hidden}
+.scroll-thumb{height:100%;background:rgba(255,255,255,.7);width:20%;transition:left .4s var(--ease);position:absolute}
 
     /* ══ VIDEO BANNER — arriba y prominente ══ */
     .video-banner-section {
@@ -798,6 +838,7 @@
     <button class="btn btn-ghost btn-sm" id="btn-logout">Salir</button>
   </div>
 </nav>
+  
 
 <!-- DASHBOARD -->
 <div id="view-dashboard" class="view">
@@ -808,6 +849,94 @@
       <div class="hero-images">
 
 </div>
+    </div>
+  </div>
+  <!-- HORIZONTAL HERO — Crepes & Waffles architecture -->
+  <div class="horizontal-hero-wrap">
+
+    <!-- FIXED BAND LABELS -->
+    <div class="bands-fixed" id="bands-fixed">
+      <div class="band-label active-band" data-panel="0"><span>Nosotros</span></div>
+      <div class="band-label" data-panel="1"><span>Historia</span></div>
+      <div class="band-label" data-panel="2"><span>Impacto</span></div>
+      <div class="band-label" data-panel="3"><span>Marcas</span></div>
+      <div class="band-label" data-panel="4"><span>El Mundo</span></div>
+    </div>
+
+    <!-- SCROLLABLE PANELS -->
+    <div class="horizontal-panels" id="horizontal-panels">
+
+      <!-- PANEL 1 — NOSOTROS -->
+      <div class="h-panel in-view" data-index="0">
+        <img class="h-panel-img" src="monstera 5.jpg" alt="Nosotros"/>
+        <div class="h-panel-overlay"></div>
+        <div class="h-panel-color-overlay" style="background:#2d4a1e"></div>
+        <div class="h-panel-content">
+          <p class="h-panel-eyebrow">Quiénes somos</p>
+          <h2 class="h-panel-title">Noso<br/>tros</h2>
+          <p class="h-panel-desc">Transformamos hábitos en arte. Con la idea de llegar al corazón y quedarnos en la mente, te guiamos hacia un consumo que cuida el planeta.</p>
+          <div class="h-panel-cta" onclick="showView('quiz');initQuiz()">Hacer mi evaluación →</div>
+        </div>
+      </div>
+
+      <!-- PANEL 2 — HISTORIA -->
+      <div class="h-panel" data-index="1">
+        <img class="h-panel-img" src="underconsumption 3.jpg" alt="Historia"/>
+        <div class="h-panel-overlay"></div>
+        <div class="h-panel-color-overlay" style="background:#3d6128"></div>
+        <div class="h-panel-content">
+          <p class="h-panel-eyebrow">Nuestra historia</p>
+          <h2 class="h-panel-title">Histo<br/>ria</h2>
+          <p class="h-panel-desc">Somos una herramienta creada por jóvenes que creen que vivir de forma sostenible no es una restricción, sino una forma de libertad.</p>
+          <div class="h-panel-cta" onclick="showView('tracker')">Ver mis compras →</div>
+        </div>
+      </div>
+
+      <!-- PANEL 3 — IMPACTO -->
+      <div class="h-panel" data-index="2">
+        <img class="h-panel-img" src="plantinh.jpg" alt="Impacto"/>
+        <div class="h-panel-overlay"></div>
+        <div class="h-panel-color-overlay" style="background:#1e3d2b"></div>
+        <div class="h-panel-content">
+          <p class="h-panel-eyebrow">Nuestro impacto</p>
+          <h2 class="h-panel-title">Impac<br/>to</h2>
+          <p class="h-panel-desc">Estamos movidos por el deseo de actuar e inspirar a otros. Cada compra consciente es una historia de transformación real.</p>
+          <div class="h-panel-cta" onclick="showView('goals')">Mis metas →</div>
+        </div>
+      </div>
+
+      <!-- PANEL 4 — MARCAS -->
+      <div class="h-panel" data-index="3">
+        <img class="h-panel-img" src="https://images.unsplash.com/photo-1523381294911-8d3cead13475?q=80&w=1600&auto=format&fit=crop" alt="Marcas"/>
+        <div class="h-panel-overlay"></div>
+        <div class="h-panel-color-overlay" style="background:#6b4f38"></div>
+        <div class="h-panel-content">
+          <p class="h-panel-eyebrow">Nuestras marcas</p>
+          <h2 class="h-panel-title">Nues<br/>tras<br/>Marcas</h2>
+          <p class="h-panel-desc">En cada alternativa que te mostramos se refleja el compromiso con experiencias de consumo únicas y transformadoras.</p>
+          <div class="h-panel-cta" onclick="showView('guide')">Ver alternativas →</div>
+        </div>
+      </div>
+
+      <!-- PANEL 5 — BOGOTÁ CONSCIENTE -->
+      <div class="h-panel" data-index="4">
+        <img class="h-panel-img" src="underconsumption 2.jpg" alt="En el Mundo"/>
+        <div class="h-panel-overlay"></div>
+        <div class="h-panel-color-overlay" style="background:#2d3d4a"></div>
+        <div class="h-panel-content">
+          <p class="h-panel-eyebrow">Alcance global</p>
+          <h2 class="h-panel-title">En el<br/>Mundo</h2>
+          <p class="h-panel-desc">Construimos conexiones significativas con personas de todos los rincones del planeta que eligen consumir con conciencia.</p>
+          <div class="h-panel-cta" onclick="showView('quiz');initQuiz()">Comenzar →</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCROLL INDICATOR -->
+    <div class="scroll-indicator">
+      <span>Deslizar</span>
+      <div class="scroll-track"><div class="scroll-thumb" id="scroll-thumb"></div></div>
+      <span>→</span>
     </div>
   </div>
 
